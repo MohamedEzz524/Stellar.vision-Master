@@ -1,0 +1,563 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+@import 'tailwindcss';
+
+@font-face {
+  font-family: 'Gridular';
+  src: url('./assets/fonts/Gridular-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --bg-primary: 0, 0, 0;
+    --bg-secondary: #e8e1d9;
+    --sidebar: rgba(248, 245, 242, 0.95);
+    --text-primary: 255, 255, 255;
+    --text-secondary: #5f6c7d;
+
+    --accent-primary: #a78a7f;
+    --accent-secondary: #d4b483;
+    --accent-hover: #c7a27c;
+    --color-border: rgba(255, 255, 255, 0.3);
+
+    /* Shadows: Subtle and warm */
+    --shadow: 0 0 10px rgba(167, 138, 127, 0.1);
+    --glow: 0 0 8px rgba(212, 180, 131, 0.2);
+    --neon-pulse: 0 0 5px rgba(167, 138, 127, 0.3);
+
+    /* Buttons: Natural gradient */
+    --button-bg: linear-gradient(45deg, #a78a7f, #d4b483);
+    --button-hover: linear-gradient(45deg, #d4b483, #c7a27c);
+  }
+}
+
+@utility container {
+  @apply mx-auto max-w-[1920px] px-0 lg:px-20 xl:px-28;
+}
+@utility hero-section {
+  @apply text-textPrimary relative h-screen min-h-screen w-full pt-28 pb-20;
+}
+@utility main-section {
+  @apply bg-bgPrimary text-textPrimary h-screen min-h-screen w-full pt-28;
+}
+
+@theme {
+  --font-sans: 'Space Mono', monospace;
+  --font-grid: 'Gridular', sans-serif;
+
+  --color-bgPrimary: rgb(var(--bg-primary));
+  --color-bgSecondary: var(--bg-secondary);
+  --color-buttonHover: var(--button-hover);
+  --color-accentPrimary: var(--accent-primary);
+  --color-accentSecondary: var(--accent-secondary);
+  --color-accentHover: var(--accent-hover);
+  --color-sidebar: var(--sidebar);
+  --color-textPrimary: rgb(var(--text-primary));
+  --color-textSecondary: var(--text-secondary);
+  --color-border: var(--border);
+
+  --shadow-shadowPrimary: var(--shadow);
+  --shadow-shadowGlow: var(--glow);
+  --shadow-shadowNeon: var(--neon-pulse);
+}
+
+@layer components {
+  .text-primary {
+    @apply text-textPrimary;
+  }
+  .main-section {
+    @apply flex h-full w-full grow flex-col items-center gap-5 px-5 pb-5;
+  }
+  .hero-section {
+    @apply flex h-full w-full grow flex-col items-center gap-5 px-5 pb-5;
+
+    h2 {
+      @apply text-[2.6rem] leading-none whitespace-nowrap lg:text-[clamp(3.125rem,-1.1607rem+6.6964vw,6.875rem)];
+    }
+    p {
+      @apply text-textPrimary font-sans text-[10px] lg:text-xs xl:text-sm;
+    }
+    .container {
+      @apply h-full;
+    }
+  }
+
+  .button-gradient {
+    @apply bg-linear-45 from-(--button-primary) to-(--button-secondary);
+  }
+
+  .button-hover {
+    @apply bg-linear-45 from-(--button-secondary) to-(--button-hover);
+  }
+
+  .text-body {
+    @apply text-gray-500 dark:text-gray-300;
+  }
+
+  .gray-hover {
+    @apply hover:bg-gray-200/30 dark:hover:bg-gray-600/40;
+  }
+  .gray-button {
+    @apply cursor-pointer bg-gray-300 px-4 py-2 text-gray-700 opacity-90 hover:opacity-100 dark:bg-gray-600 dark:text-gray-200;
+  }
+
+  .trans-colors {
+    @apply transition-colors duration-300;
+  }
+}
+
+body {
+  background-color: #000;
+  width: 100%;
+}
+/* Prevent all scrolling */
+body.no-scroll {
+  overflow: hidden !important;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+.object-container {
+  opacity: 0;
+}
+/* Or if position: fixed causes issues, use this alternative: */
+body.no-scroll {
+  overflow: hidden !important;
+  height: 100vh;
+  overscroll-behavior: none;
+  touch-action: none;
+}
+
+/* ===== CUSTOM CURSOR ===== */
+html,
+body,
+* {
+  cursor: none !important;
+}
+
+body:active .custom-cursor,
+html:active .custom-cursor {
+  transform: scale(0.95);
+}
+.cursor-outer {
+  width: 24px;
+  height: 24px;
+  border: 2px solid white;
+  background: transparent;
+  position: absolute;
+  animation: cursor-rotate 2s linear infinite;
+}
+
+.cursor-inner {
+  width: 8px;
+  height: 8px;
+  background: white;
+  position: absolute;
+}
+
+@keyframes cursor-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== TEXT ANIMATIONS ===== */
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .animated-text-flip,
+  .animated-text-slide {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Flip animation container - needs perspective for 3D rotation */
+.animated-text-flip {
+  display: inline-block;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+.animated-text-flip span {
+  display: inline-block;
+  transform-origin: top;
+}
+
+/* Slide animation container - needs overflow hidden */
+.animated-text-slide {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+.animated-text-slide span {
+  display: inline-block;
+  will-change: transform;
+}
+.select-timezone::after {
+  content: '';
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  z-index: 2;
+  pointer-events: none;
+  border-top: 8px solid white;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+}
+.desktop-logo-corner path[stroke] {
+  stroke-width: 1px;
+  stroke: #fff;
+}
+.corner-svg path[stroke] {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+@media (min-width: 1024px) {
+  .desktop-logo-corner path[stroke] {
+    stroke-width: 3px;
+  }
+  .corner-svg path[stroke] {
+    stroke-width: 2px;
+  }
+}
+/* Flickering animation */
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 0.3;
+    filter: brightness(0.95);
+  }
+  20% {
+    opacity: 0.5;
+    filter: brightness(0.97);
+  }
+  40% {
+    opacity: 0.2;
+    filter: brightness(0.93);
+  }
+  60% {
+    opacity: 0.4;
+    filter: brightness(0.96);
+  }
+  80% {
+    opacity: 0.25;
+    filter: brightness(0.94);
+  }
+}
+
+/* Moving noise animation */
+@keyframes noise-move {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 20px 100px;
+  }
+}
+@keyframes noise-move-slow {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 100px 100px;
+  }
+}
+
+/* Glitch animation - background position jumps in short intervals for a digital glitch effect */
+@keyframes noise-glitch {
+  0% {
+    background-position: 0 0;
+  }
+  8% {
+    background-position: -15px 12px;
+  }
+  16% {
+    background-position: 20px -8px;
+  }
+  24% {
+    background-position: -8px 25px;
+  }
+  32% {
+    background-position: 30px 5px;
+  }
+  40% {
+    background-position: -25px -15px;
+  }
+  48% {
+    background-position: 12px 35px;
+  }
+  56% {
+    background-position: -18px 8px;
+  }
+  64% {
+    background-position: 35px -12px;
+  }
+  72% {
+    background-position: -5px 45px;
+  }
+  80% {
+    background-position: 22px 15px;
+  }
+  88% {
+    background-position: -30px -5px;
+  }
+  96% {
+    background-position: 8px 28px;
+  }
+  100% {
+    background-position: -12px 20px;
+  }
+}
+
+.flicker-animation {
+  animation: flicker 2s infinite;
+}
+
+.noise-move-slow-animation {
+  animation: noise-glitch 1.2s steps(1, end) infinite;
+  background-repeat: repeat;
+}
+.noise-move-animation {
+  animation: noise-glitch 0.9s steps(1, end) infinite;
+  background-repeat: repeat;
+}
+
+.noise-glitch-animation {
+  animation: noise-glitch 2s steps(1, end) infinite;
+  background-repeat: repeat;
+}
+
+.noise-glitch-fast-animation {
+  animation: noise-glitch 1.5s steps(1, end) infinite;
+  background-repeat: repeat;
+}
+
+.noise-glitch-slow-animation {
+  animation: noise-glitch 2.5s steps(1, end) infinite;
+  background-repeat: repeat;
+}
+
+/* Scrolling text animation - starts from translateX(-100%) to left: 100% */
+@keyframes scroll-text {
+  0% {
+    transform: translateX(0);
+    left: 100%;
+  }
+  100% {
+    transform: translateX(-100%);
+    left: 0;
+  }
+}
+
+.scroll-text-animation {
+  position: absolute;
+  animation: scroll-text 16s linear infinite;
+  white-space: nowrap;
+}
+
+/* Hot temperature text - lightweight */
+.hot-temperature-text {
+  color: #ff0000;
+  font-weight: bold;
+  display: inline;
+  font-size: 0.9em;
+}
+
+.thermometer-icon-inline {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 2px;
+}
+
+/* Scroll progress leaf transitions */
+.leaf-transition {
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.3));
+  transition: all 0.3s ease-out;
+}
+
+.leaf-transition.leaf-filled {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.leaf-transition.leaf-empty {
+  opacity: 0.4;
+  transform: scale(0.9);
+}
+
+/* Hero image 3D transform support */
+#hero-image {
+  transform-style: preserve-3d;
+}
+
+/* Available day - enhanced silver/metallic mirror effect with glowing animation */
+.calendar-day-available {
+  /* More pronounced silver/metallic background - lighter on left/bottom, darker on right/top */
+  background: linear-gradient(
+    90deg,
+    rgba(240, 240, 240, 0.8),
+    rgba(200, 200, 200, 0.6) 70%,
+    rgba(180, 180, 180, 0.4)
+  );
+  background-size: 100% 100%;
+  box-shadow: inset 0 2px 2px rgba(255, 255, 255, 0.7);
+  color: rgba(0, 0, 0) !important;
+
+  position: relative;
+  overflow: hidden;
+}
+
+/* Moving shimmer effect - glowing light that moves across (mirror reflection) */
+.calendar-day-available::after {
+  content: '';
+  position: absolute;
+  bottom: 0%;
+  right: 15%;
+  width: 30%;
+  filter: blur(3px);
+  height: 100%;
+  background: linear-gradient(to top left, #fff 20%, transparent, #fff 80%);
+  pointer-events: none;
+  z-index: -1;
+}
+.calendar-day-available::before {
+  content: '';
+  position: absolute;
+  top: 0%;
+  left: 10%;
+  width: 20%;
+  filter: blur(3px);
+  height: 85%;
+  background: #fff;
+  pointer-events: none;
+  z-index: -1;
+}
+.calendar-day-available.big::before,
+.calendar-day-available.big::after {
+  filter: blur(8px);
+}
+.calendar-day-available.big::after {
+  right: 15%;
+  width: 30%;
+  background: linear-gradient(150deg, #fff 5%, transparent, #fff 80%);
+}
+/* Disabled day - black background style (was previously available) */
+.calendar-day-disabled {
+  background: #000;
+  color: rgba(255, 255, 255);
+  box-shadow:
+    inset 1px 0 0 rgba(255, 255, 255, 0.1),
+    inset -1px 0 0 rgba(255, 255, 255, 0.1),
+    inset 0 4px 6px rgba(255, 255, 255, 0.6);
+  cursor: not-allowed;
+}
+
+/* Preloader halves with 4 L shapes forming expand icon */
+.preloader-half {
+  position: relative;
+  width: 100px;
+  height: 40px;
+  margin: 0 10px;
+}
+
+.preloader-half-left {
+  transform-origin: center center;
+}
+
+.preloader-half-right {
+  transform-origin: center center;
+}
+
+/* Base L shape styling */
+.preloader-l-shape {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: rgb(255, 255, 255);
+  transform-origin: center center;
+}
+
+/* Left top L shape (facing down) - vertical up, horizontal right */
+.preloader-l-top-left {
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 14px; /* Vertical part */
+}
+
+.preloader-l-top-left::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 14px; /* Horizontal part */
+  height: 3px;
+  background: rgb(255, 255, 255);
+}
+
+/* Left bottom L shape (facing up) - vertical down, horizontal right */
+.preloader-l-bottom-left {
+  bottom: 0;
+  left: 0;
+  width: 3px;
+  height: 14px; /* Vertical part */
+}
+
+.preloader-l-bottom-left::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 14px; /* Horizontal part */
+  height: 3px;
+  background: rgb(255, 255, 255);
+}
+
+/* Right top L shape (facing down) - vertical up, horizontal left */
+.preloader-l-top-right {
+  top: 0;
+  right: 0;
+  width: 3px;
+  height: 14px; /* Vertical part */
+}
+
+.preloader-l-top-right::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 14px; /* Horizontal part */
+  height: 3px;
+  background: rgb(255, 255, 255);
+}
+
+/* Right bottom L shape (facing up) - vertical down, horizontal left */
+.preloader-l-bottom-right {
+  bottom: 0;
+  right: 0;
+  width: 3px;
+  height: 14px; /* Vertical part */
+}
+
+.preloader-l-bottom-right::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 14px; /* Horizontal part */
+  height: 3px;
+  background: rgb(255, 255, 255);
+}

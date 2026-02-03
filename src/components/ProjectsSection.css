@@ -1,0 +1,326 @@
+/* Projects Section Styles */
+.section.cc--clipx.cc--cases {
+  position: relative;
+  width: 100%;
+  padding-top: 430px; /* Large padding to ensure first element is fully visible */
+}
+
+.section.cc--clipx.cc--cases .container {
+  position: relative;
+  width: 100%;
+}
+
+.cases-track {
+  position: relative;
+  width: 100%;
+}
+
+.cases-track.cc--absolute {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.sticky-full-screen {
+  z-index: 2;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100svh;
+  display: flex;
+  /* position: sticky removed - using GSAP ScrollTrigger.pin() instead */
+  /* This allows overflow: hidden to work on parent elements */
+}
+
+.cases-wr {
+  grid-template-rows: auto auto;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-columns: 1fr;
+  justify-content: center;
+  align-items: center;
+  width: 30rem;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.case {
+  pointer-events: auto;
+  flex-direction: column;
+  width: 100%;
+  transition:
+    filter 0.2s,
+    opacity 0.2s;
+  display: flex;
+  position: absolute;
+}
+
+.case-wrapper {
+  flex-flow: column;
+  width: 100%;
+  display: flex;
+  position: relative;
+}
+
+.case-img {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.case-element {
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  padding-top: 100%; /* 1:1 aspect ratio (square) */
+}
+
+.case-element::after {
+  content: '';
+  background-image: url('https://cdn.prod.website-files.com/64354a08ff4dd15c2539372b/6638fb40bf0fadd1eb19eeb0_noise-light.png');
+  background-position: 0px 0px;
+  background-size: 192px;
+  animation: grain 8s steps(10) infinite;
+  opacity: 0.7;
+  height: 350%;
+  width: 350%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  pointer-events: none;
+  will-change: transform;
+}
+
+@keyframes grain {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translate(0, 0);
+  }
+  10% {
+    transform: translate(-50%, -50%) translate(-5%, -10%);
+  }
+  20% {
+    transform: translate(-50%, -50%) translate(-15%, 5%);
+  }
+  30% {
+    transform: translate(-50%, -50%) translate(7%, -25%);
+  }
+  40% {
+    transform: translate(-50%, -50%) translate(-5%, 25%);
+  }
+  50% {
+    transform: translate(-50%, -50%) translate(-15%, 10%);
+  }
+  60% {
+    transform: translate(-50%, -50%) translate(15%, 0%);
+  }
+  70% {
+    transform: translate(-50%, -50%) translate(0%, 15%);
+  }
+  80% {
+    transform: translate(-50%, -50%) translate(3%, 35%);
+  }
+  90% {
+    transform: translate(-50%, -50%) translate(-10%, 10%);
+  }
+}
+
+.case-embed {
+  object-fit: cover;
+  place-self: flex-start;
+  width: 100%;
+  height: 100%;
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.case-text {
+  margin-top: 1rem;
+  position: relative;
+}
+
+.flex-sides {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.additional-text {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+}
+
+.case-year {
+  text-align: right;
+}
+
+.case-heading {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0;
+  color: #fff;
+}
+
+.p-large {
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.corner {
+  position: absolute;
+  width: 31px;
+  height: 31px;
+  pointer-events: none;
+}
+
+.corner.first {
+  top: 0;
+  left: 0;
+}
+
+.corner.second {
+  top: 0;
+  right: 0;
+}
+
+.corner.third {
+  bottom: 0;
+  left: 0;
+}
+
+.corner.fourth {
+  bottom: 0;
+  right: 0;
+}
+
+.case .corner {
+  color: var(--text-primary, #f8f8f8);
+  opacity: 0;
+  z-index: 1;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.case:hover .corner.first {
+  opacity: 1;
+  transform: translate(-25px, -25px); /* Top-left: expand up and left */
+}
+
+.case:hover .corner.second {
+  opacity: 1;
+  transform: translate(25px, -25px); /* Top-right: expand up and right */
+}
+
+.case:hover .corner.third {
+  opacity: 1;
+  transform: translate(-25px, 25px); /* Bottom-left: expand down and left */
+}
+
+.case:hover .corner.fourth {
+  opacity: 1;
+  transform: translate(25px, 25px); /* Bottom-right: expand down and right */
+}
+
+.corner {
+  display: block;
+  visibility: visible;
+}
+
+/* Button wrapper styles */
+.button_wrapper {
+  position: relative;
+  margin-top: 2rem;
+}
+
+.button_wrapper.u--hide-desktop {
+  display: none;
+}
+
+/* Mobile styles - below lg (1024px) */
+@media (max-width: 1023px) {
+  .section.cc--clipx.cc--cases {
+    padding-top: 0;
+  }
+
+  .cases-track {
+    height: auto !important;
+  }
+
+  .sticky-full-screen {
+    position: relative !important;
+    height: auto !important;
+    /* Reset any GSAP pinning styles on mobile */
+  }
+
+  .cases-wr {
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    padding: 0 1rem;
+    transform-style: flat;
+    perspective: none;
+  }
+
+  .case {
+    position: relative !important;
+    width: 100%;
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+    margin-bottom: 2rem;
+  }
+
+  .case-wrapper {
+    width: 100%;
+  }
+
+  /* Disable hover effects on mobile */
+  .case:hover .corner.first,
+  .case:hover .corner.second,
+  .case:hover .corner.third,
+  .case:hover .corner.fourth {
+    opacity: 0;
+    transform: none;
+  }
+
+  .case-heading {
+    font-size: 1.25rem;
+  }
+
+  .additional-text {
+    font-size: 0.75rem;
+  }
+
+  .button_wrapper.u--hide-desktop {
+    display: block;
+  }
+}
+
+@media (max-width: 768px) {
+  .cases-wr {
+    padding: 0 1rem;
+  }
+}
+
+/* Perspective container */
+.cases-wr {
+  perspective: 200px;
+}
+
+/* Smooth transitions */
+.case {
+  will-change: transform, opacity, filter;
+}
