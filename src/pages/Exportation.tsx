@@ -13,7 +13,7 @@ const routes: ExtendedRoute[] = [
     element: <Home />,
   },
   {
-    path: '/calendar',
+    path: '/booking',
     title: 'Calendar',
     element: <CalendarPage />,
   },

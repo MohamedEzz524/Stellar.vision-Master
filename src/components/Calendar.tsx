@@ -5,6 +5,7 @@ import React, {
   useState,
   useMemo,
   useCallback,
+  createElement,
 } from 'react';
 import { gsap } from 'gsap';
 import { motion } from 'framer-motion';
@@ -13,6 +14,9 @@ import timeSvg from '../assets/time.svg';
 import { autoRotateTexts } from '../constants';
 import noiseImg from '../assets/images/noise.webp';
 import Button3dWrapper from './Button3dWrapper';
+
+const WISTIA_PLAYER_SCRIPT = 'https://fast.wistia.com/player.js';
+const WISTIA_EMBED_SCRIPT = 'https://fast.wistia.com/embed/85rxfbge97.js';
 
 // Custom branded radio: white ring, scale-in dot, focus/hover states
 const CustomRadio = ({
@@ -478,6 +482,20 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
       });
       gsapAnimationsRef.current = [];
     };
+  }, []);
+
+  // Load Wistia scripts once (for video in drawer and/or page)
+  useEffect(() => {
+    if (document.querySelector(`script[src="${WISTIA_PLAYER_SCRIPT}"]`)) return;
+    const player = document.createElement('script');
+    player.src = WISTIA_PLAYER_SCRIPT;
+    player.async = true;
+    document.head.appendChild(player);
+    const embed = document.createElement('script');
+    embed.src = WISTIA_EMBED_SCRIPT;
+    embed.async = true;
+    embed.type = 'module';
+    document.head.appendChild(embed);
   }, []);
 
   const calendarRef = useRef<HTMLDivElement>(null);
@@ -1878,6 +1896,36 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
               </div>
             </div>
           )}
+
+          {/* Wistia video - drawer: below button, above title; page: rendered by calendar page above Calendar */}
+          {!isPageMode && (
+            <>
+              <style>{`
+                wistia-player[media-id='85rxfbge97']:not(:defined) {
+                  background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/85rxfbge97/swatch');
+                  display: block;
+                  filter: blur(5px);
+                  padding-top: 60%;
+                }
+                .calendar-video-mask-reveal {
+                  clip-path: inset(50% 50% 50% 50%);
+                  animation: calendarVideoMaskReveal 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+                }
+                @keyframes calendarVideoMaskReveal {
+                  to { clip-path: inset(0 0 0 0); }
+                }
+              `}</style>
+              <div className="mx-auto mt-8 w-full max-w-2xl px-4 pb-2">
+                <div className="calendar-video-mask-reveal">
+                  {createElement('wistia-player', {
+                    'media-id': '85rxfbge97',
+                    aspect: '1.6666666666666667',
+                  })}
+                </div>
+              </div>
+            </>
+          )}
+
           <div>
             <div className="mx-auto max-w-2xl">
               {/* Header Container - Title and Back Button */}
@@ -2071,7 +2119,7 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
                   </div>
 
                   {/* AUTO ROTATE TEXT */}
-                  <div className="border-textPrimary relative mx-auto mt-4 h-12 w-[240px] overflow-hidden rounded-md border-2 lg:h-17 lg:w-lg lg:border-3">
+                  <div className="border-textPrimary relative mx-auto mt-4 mb-4 h-12 w-[240px] overflow-hidden rounded-md border-2 lg:h-17 lg:w-lg lg:border-3">
                     <div className="relative h-full w-full">
                       <div
                         className="noise-move-slow-animation absolute inset-0 z-0 opacity-20"
