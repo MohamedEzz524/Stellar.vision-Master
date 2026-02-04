@@ -103,6 +103,7 @@ interface CalendarState {
     // 2. How can we help
     howCanWeHelp: string; // boost_performance | specific_edit | need_new_website
     currentWebsiteLink: string; // only if A or B
+    brandInstagramLink: string; // only if A or B
     referenceWebsites: string; // link or "no" only if C
     // 3. Owner & partners
     areYouOwner: string; // yes | marketing_team | other
@@ -192,6 +193,7 @@ const initialState: CalendarState = {
     lastMonthConversionRate: '',
     howCanWeHelp: '',
     currentWebsiteLink: '',
+    brandInstagramLink: '',
     referenceWebsites: '',
     areYouOwner: '',
     hasPartners: '',
@@ -468,6 +470,7 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
     lastMonthConversionRate?: string;
     howCanWeHelp?: string;
     currentWebsiteLink?: string;
+    brandInstagramLink?: string;
     referenceWebsites?: string;
     areYouOwner?: string;
     hasPartners?: string;
@@ -522,6 +525,7 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
     phoneNumber: /^\+?[1-9]\d{1,14}$/,
     currentWebsiteLink:
       /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/i,
+    brandInstagramLink: /^@?[a-zA-Z0-9._]{1,30}$/,
   };
 
   // Validation error messages
@@ -537,6 +541,8 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
     lastMonthConversionRate: 'Please enter your last month conversion rate',
     howCanWeHelp: 'Please select how we can help you',
     currentWebsiteLink: 'Please enter a valid website URL',
+    brandInstagramLink:
+      'Please enter a valid Instagram ID (e.g. @username or username)',
     referenceWebsites: 'Please enter a link or select No',
     areYouOwner: 'Please select your role',
     hasPartners: 'Please select an option',
@@ -613,6 +619,7 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
       );
       if (linkError)
         allErrors.push({ field: 'currentWebsiteLink', error: linkError });
+      // brandInstagramLink is optional (validated below when provided)
     }
     let refError: string | undefined;
     if (af.howCanWeHelp === 'need_new_website') {
@@ -641,6 +648,7 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
     let salesError: string | undefined;
     let convError: string | undefined;
     let linkError: string | undefined;
+    let instagramError: string | undefined;
     if (af.businessStage === 'just_starting_out') {
       adsError = validateField(
         'adsBudgetHigherThan600',
@@ -660,6 +668,15 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
     ) {
       linkError = validateField('currentWebsiteLink', af.currentWebsiteLink);
     }
+    // brandInstagramLink is optional; only validate format when provided
+    if (af.brandInstagramLink.trim()) {
+      instagramError = validateField(
+        'brandInstagramLink',
+        af.brandInstagramLink,
+      );
+      if (instagramError)
+        allErrors.push({ field: 'brandInstagramLink', error: instagramError });
+    }
 
     const visibleErrors: typeof fieldErrors = {
       ...(nameError && { name: nameError }),
@@ -670,6 +687,7 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
       ...(convError && { lastMonthConversionRate: convError }),
       ...(howError && { howCanWeHelp: howError }),
       ...(linkError && { currentWebsiteLink: linkError }),
+      ...(instagramError && { brandInstagramLink: instagramError }),
       ...(refError && { referenceWebsites: refError }),
       ...(ownerError && { areYouOwner: ownerError }),
       ...(partnersError && { hasPartners: partnersError }),
@@ -1614,6 +1632,7 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
     ) {
       lines.push(`Current website link: ${af.currentWebsiteLink}`);
     }
+    lines.push(`Brand Instagram link: ${af.brandInstagramLink.trim() || '—'}`);
     if (af.howCanWeHelp === 'need_new_website') {
       lines.push(`Reference websites / inspiration: ${af.referenceWebsites}`);
     }
@@ -2342,11 +2361,11 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
                           {[
                             {
                               value: 'just_starting_out',
-                              label: 'A. Just starting out',
+                              label: 'Just starting out',
                             },
                             {
                               value: 'already_active',
-                              label: 'B. Already active',
+                              label: 'Already active',
                             },
                           ].map((opt) => (
                             <CustomRadio
@@ -2500,30 +2519,26 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
                         </>
                       )}
 
-                      <div
-                        className="my-5 border-t border-white/5"
-                        aria-hidden
-                      />
                       {/* 2. How can we help you? */}
                       <div className="relative">
                         <p className="bg-bgPrimary word-spacing-[-4px] mb-2.5 block text-sm leading-[1.2] lg:text-base">
-                          How can we help you?{' '}
+                          How can we help you?
                           <span className="text-red-400">*</span>
                         </p>
                         <div className="flex flex-col gap-1">
                           {[
                             {
                               value: 'boost_performance',
-                              label: 'A. Boost website performance',
+                              label: 'Boost website performance',
                             },
                             {
                               value: 'specific_edit',
-                              label: 'B. I want a specific edit to my website',
+                              label: 'I want a specific edit to my website',
                             },
                             {
                               value: 'need_new_website',
                               label:
-                                "C. I don't have a website so I need a new one",
+                                "I don't have a website so I need a new one",
                             },
                           ].map((opt) => (
                             <CustomRadio
@@ -2551,10 +2566,6 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
                           </p>
                         )}
                       </div>
-                      <div
-                        className="my-5 border-t border-white/5"
-                        aria-hidden
-                      />
 
                       {/* If A or B: Your current website link */}
                       {(state.additionalFields.howCanWeHelp ===
@@ -2651,6 +2662,40 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
                           )}
                         </div>
                       )}
+
+                      {/* Your brand Instagram link - always visible, optional */}
+                      <div className="relative">
+                        <label
+                          htmlFor="brandInstagramLink"
+                          className="bg-bgPrimary word-spacing-[-4px] mb-2.5 block text-sm leading-[1.2] lg:text-base"
+                        >
+                          Your brand Instagram link
+                        </label>
+                        <input
+                          type="text"
+                          id="brandInstagramLink"
+                          name="brandInstagramLink"
+                          value={state.additionalFields.brandInstagramLink}
+                          onChange={(e) =>
+                            handleAdditionalFieldChange(
+                              'brandInstagramLink',
+                              e.target.value,
+                            )
+                          }
+                          onBlur={handleFieldBlur}
+                          className={`w-full rounded-md border bg-transparent px-4 py-3 text-white placeholder:text-sm focus:ring-2 focus:ring-white focus:outline-none ${
+                            fieldErrors.brandInstagramLink
+                              ? 'border-red-500'
+                              : 'border-white'
+                          }`}
+                          placeholder="@username or username"
+                        />
+                        {fieldErrors.brandInstagramLink && (
+                          <p className="mt-1 text-xs text-red-400">
+                            {fieldErrors.brandInstagramLink}
+                          </p>
+                        )}
+                      </div>
                       <div
                         className="my-5 border-t border-white/5"
                         aria-hidden
@@ -2695,10 +2740,6 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
                           </p>
                         )}
                       </div>
-                      <div
-                        className="my-5 border-t border-white/5"
-                        aria-hidden
-                      />
 
                       {/* If yes: Do you have partners? */}
                       {state.additionalFields.areYouOwner === 'yes' && (
