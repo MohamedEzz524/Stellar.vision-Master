@@ -1,0 +1,53 @@
+# ========================
+# Vite/React Defaults
+# ========================
+node_modules/
+dist/
+dist-ssr/
+.vite/
+.vite
+.temp/
+.cache/
+
+*.log
+
+# ========================
+# Environment Files
+# ========================
+.env
+.env.*
+!.env.example  # Keep this template file
+
+# ========================
+# System Files
+# ========================
+.DS_Store
+Thumbs.db
+
+# ========================
+# Editor/IDE
+# ========================
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ========================
+# TypeScript
+# ========================
+*.tsbuildinfo
+
+# ========================
+# Logs
+# ========================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ========================
+# Testing
+# ========================
+/coverage/
+/junit.xml
+
