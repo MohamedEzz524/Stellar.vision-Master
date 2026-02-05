@@ -16,8 +16,7 @@ interface Button3dWrapperProps {
 const RendererConfig = () => {
   const { gl } = useThree();
   useEffect(() => {
-    // @ts-expect-error - outputEncoding exists in this version of Three.js
-    gl.outputEncoding = THREE.sRGBEncoding;
+    gl.outputColorSpace = 'srgb';
     gl.toneMapping = THREE.ACESFilmicToneMapping;
     gl.toneMappingExposure = 14;
   }, [gl]);

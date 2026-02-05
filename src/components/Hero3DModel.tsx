@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Canvas, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -6,7 +7,12 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { FlakesTexture } from '../assets/js/FlakesTexture';
 import { gsap } from 'gsap';
-import { registerModel3DRef, getModel3DRef } from '../utils/revealAnimation';
+import {
+  registerModel3DRef,
+  getModel3DRef,
+  waitForModel3D,
+  setModel3DToEndState,
+} from '../utils/revealAnimation';
 import { HDREnvironment } from './HDREnvironmentDefault';
 import starModelUrl from '../assets/models/starr.glb?url';
 
@@ -166,8 +172,17 @@ const StarModel = ({
 };
 
 const Hero3DModel = ({ onModelReady }: Hero3DModelProps) => {
+  const location = useLocation();
   const groupRef = useRef<THREE.Group>(null);
   const [shouldRenderCanvas, setShouldRenderCanvas] = useState(false);
+
+  // When returning from booking-successful, set 3D star to end state (no replay of reveal)
+  useEffect(() => {
+    const state = location.state as { fromBookingSuccess?: boolean } | null;
+    if (state?.fromBookingSuccess) {
+      waitForModel3D(setModel3DToEndState);
+    }
+  }, [location.state]);
 
   // Render Canvas early so 3D model can load in parallel with preloader
   // This ensures the model is ready when the preloader finishes
@@ -344,8 +359,7 @@ const Hero3DModel = ({ onModelReady }: Hero3DModelProps) => {
   const RendererConfig = () => {
     const { gl } = useThree();
     useEffect(() => {
-      // @ts-expect-error - outputEncoding exists in this version of Three.js
-      gl.outputEncoding = THREE.sRGBEncoding;
+      gl.outputColorSpace = 'srgb';
       gl.toneMapping = THREE.ACESFilmicToneMapping;
       gl.toneMappingExposure = 12; // Reduced exposure to prevent overexposure
     }, [gl]);

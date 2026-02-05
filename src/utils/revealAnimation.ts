@@ -57,6 +57,26 @@ export const waitForModel3D = (callback: () => void): void => {
 };
 
 /**
+ * Set the 3D model to the reveal end state (e.g. when returning from booking-successful).
+ * Uses the same scale/rotation values as the end of playRevealAnimation timeline.
+ */
+export const setModel3DToEndState = (): void => {
+  if (!model3DRef?.current) return;
+  const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+  const isLargeDesktop = window.matchMedia('(min-width: 1280px)').matches;
+  const scale = isLargeDesktop ? 0.5 : isDesktop ? 0.3 : 1.2;
+  const rotationY = isDesktop
+    ? -7 * (Math.PI / 180)
+    : -20 * (Math.PI / 180);
+  gsap.set(model3DRef.current.scale, { x: scale, y: scale, z: scale });
+  gsap.set(model3DRef.current.rotation, {
+    x: -Math.PI / 2,
+    y: rotationY,
+    z: 0,
+  });
+};
+
+/**
  * Creates and plays the reveal animation timeline
  * Should be called after preloader sets isRevealing to true
  */

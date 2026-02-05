@@ -26,7 +26,7 @@ const BookingSuccessfulPage = () => {
     const id = setInterval(() => {
       setSecondsLeft((s) => {
         if (s <= 1) {
-          navigate('/', { replace: true });
+          navigate('/', { replace: true, state: { fromBookingSuccess: true } });
           return 0;
         }
         return s - 1;
@@ -96,6 +96,7 @@ const BookingSuccessfulPage = () => {
 
           <Link
             to="/"
+            state={{ fromBookingSuccess: true }}
             className="calendar-day-available big mt-4 block w-full rounded-md px-4 py-3 text-center text-xs font-bold text-black uppercase lg:rounded-xl lg:px-6 lg:py-4 lg:text-lg"
           >
             Get back to home page in {secondsLeft}{' '}

@@ -2003,16 +2003,17 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
                 state.viewState === 2 ||
                 state.viewState === 3 ||
                 state.viewState === 4) && (
-                <div className="relative z-10 my-4 flex w-full items-center lg:my-8">
-                  {/* Back Button - Left */}
-                  {(state.viewState === 3 || state.viewState === 4) && (
-                    <button
-                      onClick={handleBack}
-                      className="absolute left-4 text-sm font-normal uppercase hover:underline lg:left-0 lg:text-lg"
-                    >
-                      &lt; BACK
-                    </button>
-                  )}
+                <div className="relative z-10 my-4 flex w-full items-center justify-center lg:my-8">
+                  {/* Back Button - Left (hidden on success) */}
+                  {(state.viewState === 3 || state.viewState === 4) &&
+                    !submitSuccess && (
+                      <button
+                        onClick={handleBack}
+                        className="absolute left-4 text-sm font-normal uppercase hover:underline lg:left-0 lg:text-lg"
+                      >
+                        &lt; BACK
+                      </button>
+                    )}
                   {/* Title - Centered */}
                   {(state.viewState === 1 || state.viewState === 2) && (
                     <h2
@@ -2027,7 +2028,7 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
                       key="other-title"
                       className="mx-auto inline-block rounded-full bg-white px-3 py-1 text-xs font-bold text-black uppercase lg:text-sm"
                     >
-                      {getTitle()}
+                      {submitSuccess ? 'Booking confirmed!' : getTitle()}
                     </h2>
                   )}
                 </div>
