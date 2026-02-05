@@ -7,6 +7,7 @@ import React, {
   useCallback,
   createElement,
 } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { motion } from 'framer-motion';
 import arrowRightIcon from '../assets/arrow-right.svg';
@@ -446,6 +447,7 @@ type CalendarProps = {
 };
 
 const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
+  const navigate = useNavigate();
   const [state, dispatch] = useReducer(
     calendarReducer,
     variant === 'page' ? initialPageState : initialState,
@@ -512,8 +514,9 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
   const timeButtonsRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const gsapAnimationsRef = useRef<gsap.core.Tween[]>([]);
 
-  // localStorage key for successful submission token
+  // localStorage key for successful submission; value is JSON { submittedAt: number } or legacy 'true'
   const SUBMISSION_TOKEN_KEY = 'calendar_booking_submitted';
+  const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
   // Validation regex patterns
   const validationPatterns: Record<string, RegExp> = {
@@ -869,15 +872,32 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
     };
   }, [state.viewState, state.selectedDate, state.timezone]);
 
-  // Check localStorage for successful submission token on mount and when entering confirm state
+  // Check localStorage for successful submission; only block re-submit for 1 day
   useEffect(() => {
     if (state.viewState === 4) {
-      const token = localStorage.getItem(SUBMISSION_TOKEN_KEY);
-      if (token) {
+      const raw = localStorage.getItem(SUBMISSION_TOKEN_KEY);
+      if (!raw) return;
+      // Legacy format: just 'true' (no timestamp) – treat as valid
+      if (raw === 'true') {
         setSubmitSuccess(true);
+        return;
+      }
+      try {
+        const data = JSON.parse(raw) as { submittedAt?: number };
+        if (data && typeof data.submittedAt === 'number') {
+          if (Date.now() - data.submittedAt < ONE_DAY_MS) {
+            setSubmitSuccess(true);
+          } else {
+            localStorage.removeItem(SUBMISSION_TOKEN_KEY);
+          }
+        } else {
+          localStorage.removeItem(SUBMISSION_TOKEN_KEY);
+        }
+      } catch {
+        localStorage.removeItem(SUBMISSION_TOKEN_KEY);
       }
     }
-  }, [state.viewState]);
+  }, [state.viewState, ONE_DAY_MS]);
 
   // Configuration for available time slots (in BASE_TIMEZONE)
   const startTime = '12:00 PM'; // Start time in Africa/Cairo
@@ -1646,8 +1666,20 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
     return '\n' + lines.join('\n') + '\n';
   };
 
-  // Format booking data for API
-  // Returns only: name, email, description, slot_start_time, timezone
+  // Get cookie value by name (plain JS, no deps). Returns null if not set.
+  const getCookie = (name: string): string | null => {
+    if (typeof document === 'undefined' || !document.cookie) return null;
+    const match = document.cookie.match(
+      new RegExp(
+        '(?:^|;\\s*)' +
+          name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') +
+          '=([^;]*)',
+      ),
+    );
+    return match ? decodeURIComponent(match[1]) : null;
+  };
+
+  // Format booking data for API (includes Meta CAPI fields when available)
   const formatBookingData = () => {
     const { name, email, startTime, timezone } = state.formData;
 
@@ -1671,14 +1703,22 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
     // Get the complete description with all additional fields
     const completeDescription = formatCompleteDescription();
 
-    // Return only the required fields in the exact format
-    return {
+    const payload: Record<string, string> = {
       name: name.trim(),
       email: email.trim(),
       slot_start_time,
       description: completeDescription,
       timezone: timezone || 'UTC',
+      event_source_url:
+        typeof window !== 'undefined' ? window.location.href : '',
     };
+
+    const fbp = getCookie('_fbp');
+    if (fbp) payload.fbp = fbp;
+    const fbc = getCookie('_fbc');
+    if (fbc) payload.fbc = fbc;
+
+    return payload;
   };
 
   // Handle form submit
@@ -1761,11 +1801,22 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
         );
       }
 
-      // Store token in localStorage to persist successful submission
-      localStorage.setItem(SUBMISSION_TOKEN_KEY, 'true');
+      // Store submission with timestamp; re-submit allowed again after 1 day
+      localStorage.setItem(
+        SUBMISSION_TOKEN_KEY,
+        JSON.stringify({ submittedAt: Date.now() }),
+      );
 
-      // Show success message instead of closing
-      setSubmitSuccess(true);
+      // Redirect to booking-successful page with same data as confirm state
+      navigate('/booking-successful', {
+        replace: true,
+        state: {
+          selectedDateTime: formatSelectedDateTime(),
+          timezoneDisplay: getTimezoneDisplayName(
+            state.formData.timezone,
+          ).toUpperCase(),
+        },
+      });
     } catch (error) {
       console.error('Error creating booking:', error);
       const errorMessage =
@@ -1917,7 +1968,7 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
           )}
 
           {/* Wistia video - drawer: below button, above title; page: rendered by calendar page above Calendar */}
-          {!isPageMode && (
+          {(!isPageMode && state.viewState !== 0) && (
             <>
               <style>{`
                 wistia-player[media-id='85rxfbge97']:not(:defined) {
@@ -2094,7 +2145,7 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
                                 handleDayClick(day)
                               }
                               disabled={day === null || isDisabled}
-                              className={`aspect-square rounded-md text-center text-lg font-bold md:rounded-xl lg:text-xl ${
+                              className={`aspect-square rounded-md text-center text-lg font-bold md:rounded-xl lg:text-2xl ${
                                 day === null
                                   ? 'cursor-default opacity-0'
                                   : isDisabled
@@ -2279,7 +2330,7 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
                       <button
                         type="button"
                         onClick={() => dispatch({ type: 'CLOSE_CALENDAR' })}
-                        className="calendar-day-available big mt-4 w-full rounded-md px-4 py-3 text-xs font-bold text-black uppercase lg:rounded-xl lg:px-6 lg:py-4 lg:text-lg"
+                        className="calendar-day-available big mt-4 mb-4 w-full rounded-md px-4 py-3 text-xs font-bold text-black uppercase lg:rounded-xl lg:px-6 lg:py-4 lg:text-lg"
                       >
                         Close
                       </button>
