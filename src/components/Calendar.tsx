@@ -719,7 +719,7 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
       const isDevelopment = import.meta.env.DEV;
       const baseUrl = isDevelopment
         ? '/api'
-        : 'https://calender-stellervision-production.up.railway.app/api';
+        : 'https://stellar-vision-booking-api-production.up.railway.app/api';
 
       // Fetch data for all required years in parallel
       const fetchPromises = years.map((year) => {
@@ -733,6 +733,10 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
           mode: 'cors',
           signal, // Add abort signal
         }).then((response) => {
+          // 404 = no availability data for this year (backend may not have it yet) → treat as empty
+          if (response.status === 404) {
+            return [];
+          }
           if (!response.ok) {
             throw new Error(
               `Failed to fetch available days for year ${year}: ${response.status} ${response.statusText}`,
@@ -747,6 +751,7 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
       // Merge all years' data into a single array
       const mergedData: AvailableDaysData[] = results.flat();
       setAvailableDaysData(mergedData);
+      console.log('mergedData', mergedData);
       return mergedData;
     } catch (error) {
       // Don't log abort errors - they're expected when component unmounts or dependencies change
@@ -815,7 +820,7 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
       const isDevelopment = import.meta.env.DEV;
       const baseUrl = isDevelopment
         ? '/api'
-        : 'https://calender-stellervision-production.up.railway.app/api';
+        : 'https://stellar-vision-booking-api-production.up.railway.app/api';
       const url = `${baseUrl}/availability/day?date=${dateStr}&timezone=${encodeURIComponent(timezone)}`;
 
       const response = await fetch(url, {
@@ -1760,7 +1765,7 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
       const isDevelopment = import.meta.env.DEV;
       const baseUrl = isDevelopment
         ? '/api'
-        : 'https://calender-stellervision-production.up.railway.app/api';
+        : 'https://stellar-vision-booking-api-production.up.railway.app/api';
       const url = `${baseUrl}/bookings/create`;
 
       const response = await fetch(url, {
@@ -1968,7 +1973,7 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
           )}
 
           {/* Wistia video - drawer: below button, above title; page: rendered by calendar page above Calendar */}
-          {(!isPageMode && state.viewState !== 0) && (
+          {!isPageMode && state.viewState !== 0 && (
             <>
               <style>{`
                 wistia-player[media-id='85rxfbge97']:not(:defined) {
@@ -2083,6 +2088,22 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
                       />
                     </motion.button>
                   </div>
+
+                  {/* No available days message for this month */}
+                  {(() => {
+                    const monthAbbr = getMonthAbbreviation(state.currentMonth);
+                    const monthData = availableDaysData.find(
+                      (d) =>
+                        d.year === state.currentYear && d.month === monthAbbr,
+                    );
+                    const noDaysThisMonth =
+                      !monthData || monthData.availableDays.length === 0;
+                    return noDaysThisMonth ? (
+                      <p className="text-textPrimary mb-3 text-center text-xs opacity-80 lg:text-sm">
+                        There are no days available this month.
+                      </p>
+                    ) : null;
+                  })()}
 
                   {/* Calendar Grid */}
                   <div className="flex-1">

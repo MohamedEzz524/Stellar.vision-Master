@@ -412,7 +412,7 @@ const Calendar = () => {
       const isDevelopment = import.meta.env.DEV;
       const baseUrl = isDevelopment
         ? '/api'
-        : 'https://calender-stellervision-production.up.railway.app/api';
+        : 'https://stellar-vision-booking-api-production.up.railway.app/api';
 
       // Fetch data for all required years in parallel
       const fetchPromises = years.map((year) => {
@@ -502,7 +502,7 @@ const Calendar = () => {
       const isDevelopment = import.meta.env.DEV;
       const baseUrl = isDevelopment
         ? '/api'
-        : 'https://calender-stellervision-production.up.railway.app/api';
+        : 'https://stellar-vision-booking-api-production.up.railway.app/api';
       const url = `${baseUrl}/availability/day?date=${dateStr}&timezone=${encodeURIComponent(timezone)}`;
 
       const response = await fetch(url, {
