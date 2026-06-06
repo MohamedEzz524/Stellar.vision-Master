@@ -537,27 +537,11 @@ const Preloader = () => {
       className="preloader-container fixed inset-0 z-[99999]"
       style={containerStyle}
     >
-      {/* Top Image Layer - 50% height, full width */}
-      <div
-        className={topLayerClassName}
-        style={{
-          backgroundImage: 'url("")', // Add your top image URL here
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      />
+      {/* Top half - slides up on reveal */}
+      <div className={topLayerClassName} />
 
-      {/* Bottom Image Layer - 50% height, full width */}
-      <div
-        className={bottomLayerClassName}
-        style={{
-          backgroundImage: 'url("")', // Add your bottom image URL here
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      />
+      {/* Bottom half - slides down on reveal */}
+      <div className={bottomLayerClassName} />
 
       {/* Overlay Button Container */}
       <div

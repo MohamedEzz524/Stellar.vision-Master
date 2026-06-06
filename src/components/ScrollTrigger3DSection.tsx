@@ -128,6 +128,10 @@ const ScrollTrigger3DSection = ({
   } | null>(null);
   const lastUpdateTimeRef = useRef<number>(0);
   const cachedLineRectsRef = useRef<Map<HTMLElement, DOMRect>>(new Map());
+  // Tracks whether the rocks' fade-in has already played. Lives outside onUpdate
+  // so it survives across scroll frames (previously a local `let` that reset
+  // every frame and re-triggered the fade animation).
+  const rocksFadedInRef = useRef(false);
 
   // Initialize refs for 4 objects - moved to useEffect to avoid running on every render
   useEffect(() => {
@@ -455,13 +459,10 @@ const ScrollTrigger3DSection = ({
               row2EndTop + (row2BackTop - row2EndTop) * backProgress;
           }
 
-          // Update object containers with top positioning (in pixels, relative to section)
-          // Only update if 3D elements are loaded (use ref to avoid stale closure)
-          let rocksFadedIn = false; // outside useEffect
-
-          // inside onUpdate
-          if (!rocksFadedIn) {
-            rocksFadedIn = true;
+          // Fade rocks in once on first scroll update (after this, they stay visible).
+          // rocksFadedInRef is component-scoped so it persists across onUpdate calls.
+          if (!rocksFadedInRef.current) {
+            rocksFadedInRef.current = true;
             objectContainerRefs.current.forEach((el) => {
               if (el)
                 gsap.to(el, { opacity: 1, duration: 0.5, ease: 'power1.out' });

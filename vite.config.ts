@@ -16,4 +16,22 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    // Split heavy vendor libraries into their own chunks so they can be
+    // cached independently and downloaded in parallel with the app code.
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
+          'gsap-vendor': ['gsap'],
+          'framer-motion': ['framer-motion'],
+          'lenis': ['lenis'],
+        },
+      },
+    },
+    // Raise the per-chunk warning ceiling — three.js alone is ~600 kB minified,
+    // which is expected for a site that ships a 3D hero.
+    chunkSizeWarningLimit: 700,
+  },
 });

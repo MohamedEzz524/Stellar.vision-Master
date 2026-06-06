@@ -1,25 +1,11 @@
-import { useEffect, createElement } from 'react';
+import { createElement } from 'react';
 import { Link } from 'react-router-dom';
 import Calendar from '../../components/Calendar';
 
-const WISTIA_PLAYER_SCRIPT = 'https://fast.wistia.com/player.js';
-const WISTIA_EMBED_SCRIPT = 'https://fast.wistia.com/embed/85rxfbge97.js';
+// Wistia scripts are loaded by the Calendar component itself (it renders here
+// as variant="page"). No duplicate loader needed.
 
 const CalendarPage = () => {
-  useEffect(() => {
-    if (document.querySelector(`script[src="${WISTIA_PLAYER_SCRIPT}"]`)) return;
-    const player = document.createElement('script');
-    player.src = WISTIA_PLAYER_SCRIPT;
-    player.async = true;
-    document.head.appendChild(player);
-
-    const embed = document.createElement('script');
-    embed.src = WISTIA_EMBED_SCRIPT;
-    embed.async = true;
-    embed.type = 'module';
-    document.head.appendChild(embed);
-  }, []);
-
   return (
     <div className="min-h-[100dvh] w-full bg-black text-white">
       <style>{`

@@ -267,30 +267,12 @@ const ProjectsSectionDesktop = ({
                           <div className="case-element">
                             <img
                               src={project.image}
-                              loading="eager"
+                              loading="lazy"
                               alt={project.imageAlt}
                               title={project.imageAlt}
                               sizes="100vw"
                               className="case-embed"
                             />
-                            {project.video && (
-                              <div className="w-condition-invisible">
-                                <video
-                                  loop
-                                  muted
-                                  autoPlay
-                                  playsInline
-                                  crossOrigin="anonymous"
-                                  preload="metadata"
-                                  className="case-embed"
-                                >
-                                  <source
-                                    src={project.video}
-                                    type="video/mp4"
-                                  />
-                                </video>
-                              </div>
-                            )}
                           </div>
                         </div>
                         <div className="case-text">
@@ -316,30 +298,12 @@ const ProjectsSectionDesktop = ({
                           <div className="case-element">
                             <img
                               src={project.image}
-                              loading="eager"
+                              loading="lazy"
                               alt={project.imageAlt}
                               title={project.imageAlt}
                               sizes="100vw"
                               className="case-embed"
                             />
-                            {project.video && (
-                              <div className="w-condition-invisible">
-                                <video
-                                  loop
-                                  muted
-                                  autoPlay
-                                  playsInline
-                                  crossOrigin="anonymous"
-                                  preload="metadata"
-                                  className="case-embed"
-                                >
-                                  <source
-                                    src={project.video}
-                                    type="video/mp4"
-                                  />
-                                </video>
-                              </div>
-                            )}
                           </div>
                         </div>
                         <div className="case-text">

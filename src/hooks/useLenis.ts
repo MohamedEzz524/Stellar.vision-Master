@@ -21,17 +21,18 @@ export const useLenis = () => {
     // Connect Lenis with GSAP ScrollTrigger
     lenis.on('scroll', ScrollTrigger.update);
 
-    // Use GSAP ticker for Lenis RAF
-    gsap.ticker.add((time) => {
+    // Use GSAP ticker for Lenis RAF. Keep a stable reference so cleanup
+    // actually removes the callback (the previous code passed a new arrow
+    // function to gsap.ticker.remove, which would never match).
+    const tickerCallback = (time: number) => {
       lenis.raf(time * 1000);
-    });
+    };
+    gsap.ticker.add(tickerCallback);
     gsap.ticker.lagSmoothing(0);
 
     return () => {
+      gsap.ticker.remove(tickerCallback);
       lenis.destroy();
-      gsap.ticker.remove((time) => {
-        lenis.raf(time * 1000);
-      });
     };
   }, []);
 };

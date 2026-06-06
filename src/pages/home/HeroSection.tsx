@@ -65,11 +65,17 @@ const ThermometerIcon = () => (
 );
 
 const HeroSection = () => {
+  const sectionRef = useRef<HTMLElement>(null);
   const cleanupFunctionsRef = useRef<Array<() => void>>([]);
   const currentDate = useMemo(() => formatDate(), []);
 
   useEffect(() => {
-    const h2Elements = document.querySelectorAll<HTMLElement>('h2');
+    // Scope to this section's h2s only — not all h2s in the document — so we
+    // don't accidentally animate headings from other sections that mount later.
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const h2Elements = section.querySelectorAll<HTMLElement>('h2');
     const animationConfig = {
       interval: 7000,
       initialDelay: 2000,
@@ -78,7 +84,6 @@ const HeroSection = () => {
       charsClass: 'char',
     } as const;
 
-    // Apply randomization animation to each h2
     h2Elements.forEach((h2) => {
       cleanupFunctionsRef.current.push(
         animateTextRandomization(h2, animationConfig),
@@ -92,7 +97,11 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section id="hero-section" className="hero-section overflow-hidden">
+    <section
+      ref={sectionRef}
+      id="hero-section"
+      className="hero-section overflow-hidden"
+    >
       <div className="container">
         {/* row-1 */}
         <div className="font-grid -mt-8 flex h-full flex-col justify-center gap-4">
@@ -160,9 +169,6 @@ const HeroSection = () => {
 
       {/* HERO 3D MODEL */}
       <Hero3DModel />
-
-      {/* Fluid distortion effect overlay - disabled for 3D model */}
-      {/* {isDesktop && <HeroImageDistortion />} */}
     </section>
   );
 };

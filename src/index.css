@@ -1,4 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+/* Google Fonts (Space Mono) is loaded via <link rel="preconnect"> + <link rel="stylesheet">
+   in index.html so the browser can warm the connection and fetch the stylesheet in
+   parallel with the rest of the page, instead of blocking on a @import inside our CSS. */
 @import 'tailwindcss';
 
 @font-face {
@@ -112,31 +114,27 @@ body {
   background-color: #000;
   width: 100%;
 }
-/* Prevent all scrolling */
-body.no-scroll {
-  overflow: hidden !important;
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-}
-.object-container {
-  opacity: 0;
-}
-/* Or if position: fixed causes issues, use this alternative: */
+/* Prevent all scrolling while the preloader is active */
 body.no-scroll {
   overflow: hidden !important;
   height: 100vh;
   overscroll-behavior: none;
   touch-action: none;
 }
+.object-container {
+  opacity: 0;
+}
 
-/* ===== CUSTOM CURSOR ===== */
-html,
-body,
-* {
-  cursor: none !important;
+/* ===== CUSTOM CURSOR (desktop only) ===== */
+/* CustomCursor component only renders at >=1024px, so the global cursor
+   override is scoped to the same breakpoint — mobile/tablet keep their
+   native cursors and tap highlights. */
+@media (min-width: 1024px) {
+  html,
+  body,
+  * {
+    cursor: none !important;
+  }
 }
 
 body:active .custom-cursor,

@@ -201,31 +201,30 @@ export interface TestimonialVideo {
   video: string;
 }
 
-import sigmaTestimonial from '../assets/videos/Testimonial_omar_sigma.mp4';
-import helalTestimonial from '../assets/videos/Testimonial_ahmed_helal.mp4';
-import meanaTestimonial from '../assets/videos/Testimonial_ahmed_hesham.mp4';
-import nafasTestimonial from '../assets/videos/Testimonial_nour_rashdan.mp4';
-import laundorTestimonial from '../assets/videos/Testimonial_zyad_laundor.mp4';
-
 export const TestimonialVideos: TestimonialVideo[] = [
   {
     id: 'testimonial-1',
-    video: sigmaTestimonial,
+    video:
+      'https://res.cloudinary.com/dtwrgatrf/video/upload/v1780740798/Testimonial_omar_sigma_bwnebd.mp4',
   },
   {
     id: 'testimonial-2',
-    video: helalTestimonial,
+    video:
+      'https://res.cloudinary.com/dtwrgatrf/video/upload/v1780740783/Testimonial_ahmed_helal_cayeku.mp4',
   },
   {
     id: 'testimonial-3',
-    video: meanaTestimonial,
+    video:
+      'https://res.cloudinary.com/dtwrgatrf/video/upload/v1780740816/Testimonial_ahmed_hesham_youwig.mp4',
   },
   {
     id: 'testimonial-4',
-    video: nafasTestimonial,
+    video:
+      'https://res.cloudinary.com/dtwrgatrf/video/upload/v1780740790/Testimonial_nour_rashdan_qmqilo.mp4',
   },
   {
     id: 'testimonial-5',
-    video: laundorTestimonial,
+    video:
+      'https://res.cloudinary.com/dtwrgatrf/video/upload/v1780740772/Testimonial_zyad_laundor_ccxnau.mp4',
   },
 ];

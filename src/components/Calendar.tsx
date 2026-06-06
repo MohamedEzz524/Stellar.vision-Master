@@ -528,6 +528,101 @@ const initialPageState: CalendarState = {
   viewState: 2, // Already "started" (month view) for standalone page
 };
 
+// localStorage key for successful submission; value is JSON { submittedAt: number } or legacy 'true'
+const SUBMISSION_TOKEN_KEY = 'calendar_booking_submitted';
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+// Base timezone for available time slots (all times are based on this)
+const BASE_TIMEZONE = 'Africa/Cairo';
+
+// Bookable slot window in BASE_TIMEZONE, generated once at module load
+const SLOT_START_TIME = '12:00 PM';
+const SLOT_END_TIME = '05:00 PM';
+const SLOT_INTERVAL_MINUTES = 15;
+
+// Validation regex patterns
+const VALIDATION_PATTERNS: Record<string, RegExp> = {
+  name: /^[a-zA-Z0-9\s'-]{2,50}$/,
+  email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+  startTime:
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?([+-]\d{2}:\d{2}|Z)$/,
+  timezone: /^[A-Za-z_][A-Za-z0-9_/+-]*$/,
+  phoneNumber: /^\+?[1-9]\d{1,14}$/,
+  currentWebsiteLink:
+    /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/i,
+  brandInstagramLink: /^@?[a-zA-Z0-9._]{1,30}$/,
+};
+
+// Validation error messages
+const VALIDATION_MESSAGES: Record<string, string> = {
+  name: 'Name must be 2-50 characters',
+  email: 'Please enter a valid email address',
+  startTime: 'Start time is required',
+  timezone: 'Timezone must be in valid format',
+  businessStage: 'Please select your business stage',
+  adsBudgetHigherThan600: 'Please select an option',
+  lastMonthSales: 'Please enter your last month total sales (include currency)',
+  lastMonthConversionRate: 'Please enter your last month conversion rate',
+  howCanWeHelp: 'Please select how we can help you',
+  currentWebsiteLink: 'Please enter a valid website URL',
+  brandInstagramLink:
+    'Please enter a valid Instagram ID (e.g. @username or username)',
+  referenceWebsites: 'Please enter a link or select No',
+  areYouOwner: 'Please select your role',
+  hasPartners: 'Please select an option',
+  phoneNumber: 'Please enter a valid phone number with country code',
+};
+
+// Generate available time slots between start and end at fixed intervals
+const generateTimeSlots = (
+  start: string,
+  end: string,
+  interval: number,
+): string[] => {
+  const slots: string[] = [];
+
+  const [startTimeStr, startPeriod] = start.split(' ');
+  const [startHours, startMinutes] = startTimeStr.split(':').map(Number);
+  let startHour24 = startHours;
+  if (startPeriod === 'PM' && startHour24 !== 12) startHour24 += 12;
+  if (startPeriod === 'AM' && startHour24 === 12) startHour24 = 0;
+
+  const [endTimeStr, endPeriod] = end.split(' ');
+  const [endHours, endMinutes] = endTimeStr.split(':').map(Number);
+  let endHour24 = endHours;
+  if (endPeriod === 'PM' && endHour24 !== 12) endHour24 += 12;
+  if (endPeriod === 'AM' && endHour24 === 12) endHour24 = 0;
+
+  const startTotalMinutes = startHour24 * 60 + startMinutes;
+  const endTotalMinutes = endHour24 * 60 + endMinutes;
+
+  for (
+    let currentMinutes = startTotalMinutes;
+    currentMinutes <= endTotalMinutes;
+    currentMinutes += interval
+  ) {
+    const hours = Math.floor(currentMinutes / 60);
+    const minutes = currentMinutes % 60;
+
+    let hour12 = hours % 12;
+    if (hour12 === 0) hour12 = 12;
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const formattedTime = `${hour12.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`;
+
+    slots.push(formattedTime);
+  }
+
+  return slots;
+};
+
+// Pre-compute the base time slots once at module load — they never change
+// per-instance, so there's no point recomputing them inside the component.
+const BASE_AVAILABLE_TIMES = generateTimeSlots(
+  SLOT_START_TIME,
+  SLOT_END_TIME,
+  SLOT_INTERVAL_MINUTES,
+);
+
 type CalendarProps = {
   variant?: 'drawer' | 'page';
 };
@@ -608,53 +703,15 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
   const timeButtonsRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const gsapAnimationsRef = useRef<gsap.core.Tween[]>([]);
 
-  // localStorage key for successful submission; value is JSON { submittedAt: number } or legacy 'true'
-  const SUBMISSION_TOKEN_KEY = 'calendar_booking_submitted';
-  const ONE_DAY_MS = 24 * 60 * 60 * 1000;
-
-  // Validation regex patterns
-  const validationPatterns: Record<string, RegExp> = {
-    name: /^[a-zA-Z0-9\s'-]{2,50}$/,
-    email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-    startTime:
-      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?([+-]\d{2}:\d{2}|Z)$/,
-    timezone: /^[A-Za-z_][A-Za-z0-9_/+-]*$/,
-    phoneNumber: /^\+?[1-9]\d{1,14}$/,
-    currentWebsiteLink:
-      /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/i,
-    brandInstagramLink: /^@?[a-zA-Z0-9._]{1,30}$/,
-  };
-
-  // Validation error messages
-  const validationMessages: Record<string, string> = {
-    name: 'Name must be 2-50 characters',
-    email: 'Please enter a valid email address',
-    startTime: 'Start time is required',
-    timezone: 'Timezone must be in valid format',
-    businessStage: 'Please select your business stage',
-    adsBudgetHigherThan600: 'Please select an option',
-    lastMonthSales:
-      'Please enter your last month total sales (include currency)',
-    lastMonthConversionRate: 'Please enter your last month conversion rate',
-    howCanWeHelp: 'Please select how we can help you',
-    currentWebsiteLink: 'Please enter a valid website URL',
-    brandInstagramLink:
-      'Please enter a valid Instagram ID (e.g. @username or username)',
-    referenceWebsites: 'Please enter a link or select No',
-    areYouOwner: 'Please select your role',
-    hasPartners: 'Please select an option',
-    phoneNumber: 'Please enter a valid phone number with country code',
-  };
-
   // Validate a single field (required fields must not be empty)
   const validateField = (field: string, value: string): string | undefined => {
     const trimmed = value?.trim() ?? '';
     if (!trimmed) {
-      return validationMessages[field] ?? `${field} is required`;
+      return VALIDATION_MESSAGES[field] ?? `${field} is required`;
     }
-    const pattern = validationPatterns[field];
+    const pattern = VALIDATION_PATTERNS[field];
     if (pattern && !pattern.test(trimmed)) {
-      return validationMessages[field];
+      return VALIDATION_MESSAGES[field];
     }
     return undefined;
   };
@@ -722,7 +779,7 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
     if (af.howCanWeHelp === 'need_new_website') {
       refError =
         af.referenceWebsites.trim() === '' && af.referenceWebsites !== 'no'
-          ? validationMessages.referenceWebsites
+          ? VALIDATION_MESSAGES.referenceWebsites
           : undefined;
       if (refError)
         allErrors.push({ field: 'referenceWebsites', error: refError });
@@ -794,9 +851,6 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
     return { visibleErrors, allErrors };
   };
 
-  // Base timezone for available time slots (all times are based on this)
-  const BASE_TIMEZONE = 'Africa/Cairo';
-
   // Fetch available days from API
   const fetchAvailableDays = async (
     years: number[],
@@ -842,7 +896,6 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
       // Merge all years' data into a single array
       const mergedData: AvailableDaysData[] = results.flat();
       setAvailableDaysData(mergedData);
-      console.log('mergedData', mergedData);
       return mergedData;
     } catch (error) {
       // Don't log abort errors - they're expected when component unmounts or dependencies change
@@ -1050,65 +1103,10 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
         localStorage.removeItem(SUBMISSION_TOKEN_KEY);
       }
     }
-  }, [state.viewState, ONE_DAY_MS]);
+  }, [state.viewState]);
 
-  // Configuration for available time slots (in BASE_TIMEZONE)
-  const startTime = '12:00 PM'; // Start time in Africa/Cairo
-  const endTime = '05:00 PM'; // End time in Africa/Cairo
-  const intervalMinutes = 15; // Interval between slots
-
-  // Generate time slots between start and end time in 15-minute intervals
-  const generateTimeSlots = (
-    start: string,
-    end: string,
-    interval: number,
-  ): string[] => {
-    const slots: string[] = [];
-
-    // Parse start time
-    const [startTimeStr, startPeriod] = start.split(' ');
-    const [startHours, startMinutes] = startTimeStr.split(':').map(Number);
-    let startHour24 = startHours;
-    if (startPeriod === 'PM' && startHour24 !== 12) startHour24 += 12;
-    if (startPeriod === 'AM' && startHour24 === 12) startHour24 = 0;
-
-    // Parse end time
-    const [endTimeStr, endPeriod] = end.split(' ');
-    const [endHours, endMinutes] = endTimeStr.split(':').map(Number);
-    let endHour24 = endHours;
-    if (endPeriod === 'PM' && endHour24 !== 12) endHour24 += 12;
-    if (endPeriod === 'AM' && endHour24 === 12) endHour24 = 0;
-
-    // Convert to minutes for easier calculation
-    const startTotalMinutes = startHour24 * 60 + startMinutes;
-    const endTotalMinutes = endHour24 * 60 + endMinutes;
-
-    // Generate slots
-    for (
-      let currentMinutes = startTotalMinutes;
-      currentMinutes <= endTotalMinutes;
-      currentMinutes += interval
-    ) {
-      const hours = Math.floor(currentMinutes / 60);
-      const minutes = currentMinutes % 60;
-
-      // Format as 12-hour time
-      let hour12 = hours % 12;
-      if (hour12 === 0) hour12 = 12; // 0 or 12 both become 12
-      const period = hours >= 12 ? 'PM' : 'AM';
-      const formattedTime = `${hour12.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`;
-
-      slots.push(formattedTime);
-    }
-
-    return slots;
-  };
-
-  // Base available times in Africa/Cairo timezone (generated dynamically) - memoized
-  const baseAvailableTimes = useMemo(
-    () => generateTimeSlots(startTime, endTime, intervalMinutes),
-    [], // Only generate once
-  );
+  // Slot generation lives at module scope — base available times never change
+  // per-instance and don't need a per-render useMemo. Reference BASE_AVAILABLE_TIMES below.
 
   // Convert time from base timezone (Africa/Cairo) to target timezone (for display)
   const convertTimeToTimezone = (
@@ -1271,10 +1269,10 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
     if (state.viewState === 3) {
       return [];
     }
-    return baseAvailableTimes.map((time) =>
+    return BASE_AVAILABLE_TIMES.map((time) =>
       convertTimeToTimezone(time, state.timezone),
     );
-  }, [availableSlots, state.timezone, state.viewState, baseAvailableTimes]);
+  }, [availableSlots, state.timezone, state.viewState]);
 
   // Auto-complete animation state when calendar opens
   useEffect(() => {

@@ -542,10 +542,20 @@ const ProjectsSectionMobile = ({
     };
   }, [projects]);
 
-  // Animation loop
+  // Animation loop — gated by IntersectionObserver so we don't burn CPU/GPU
+  // re-rendering the Three.js scene while the section is scrolled off-screen
+  // or the tab is hidden.
   useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    let isVisible = false;
+    let isTabVisible = !document.hidden;
+
     const animate = () => {
       if (
+        isVisible &&
+        isTabVisible &&
         cardsRendererRef.current &&
         cardsSceneRef.current &&
         cardsCameraRef.current
@@ -558,12 +568,27 @@ const ProjectsSectionMobile = ({
       animationFrameRef.current = requestAnimationFrame(animate);
     };
 
+    const observer = new IntersectionObserver(
+      (entries) => {
+        isVisible = entries[0]?.isIntersecting ?? false;
+      },
+      { threshold: 0 },
+    );
+    observer.observe(section);
+
+    const handleVisibility = () => {
+      isTabVisible = !document.hidden;
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
     animate();
 
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
+      observer.disconnect();
+      document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, []);
 

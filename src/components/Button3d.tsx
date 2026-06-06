@@ -23,53 +23,7 @@ export const Model = forwardRef<
     });
   }, [gltfScene]);
 
-  // Create cube mesh in local space, centered at button's origin
   const cubeMesh = useMemo(() => {
-    if (!buttonMeshRef.current) return null;
-
-    // Get button's bounding box dimensions
-    const box = new THREE.Box3().setFromObject(buttonMeshRef.current);
-    const size = new THREE.Vector3();
-    box.getSize(size);
-
-    // Create cube with proportional dimensions
-    const geometry = new THREE.BoxGeometry(
-      size.x * 0.9, // 90% of button width
-      size.y * 0.9, // 90% of button height
-      size.z * 0.5, // 50% of button depth
-    );
-
-    const material = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      metalness: 0.0,
-      roughness: 0.1,
-      transparent: true,
-      opacity: 0.8,
-      depthTest: true,
-      depthWrite: false,
-      polygonOffset: true,
-      polygonOffsetFactor: 1,
-      polygonOffsetUnits: 1,
-    });
-
-    const mesh = new THREE.Mesh(geometry, material);
-
-    // Center the cube geometry at its local origin
-    geometry.computeBoundingBox();
-    const cubeBox = geometry.boundingBox!;
-    const cubeCenter = new THREE.Vector3();
-    cubeBox.getCenter(cubeCenter);
-    geometry.translate(-cubeCenter.x, -cubeCenter.y, -cubeCenter.z);
-
-    // Position at button's origin (0,0,0 in button's local space)
-    mesh.position.set(0, 0, 0);
-
-    return mesh;
-  }, [buttonMeshRef.current]);
-
-  // Alternative approach: Create cube using button's dimensions directly
-  // This is more reliable if button's geometry is already centered at origin
-  const cubeMeshAlt = useMemo(() => {
     if (!buttonMeshRef.current) return null;
 
     // Get the button's geometry bounding box
@@ -115,19 +69,17 @@ export const Model = forwardRef<
 
   // Parent cube to button mesh
   useEffect(() => {
-    const meshToUse = cubeMeshAlt || cubeMesh;
-
-    if (meshToUse && buttonMeshRef.current) {
-      buttonMeshRef.current.add(meshToUse);
-      cubeRef.current = meshToUse;
+    if (cubeMesh && buttonMeshRef.current) {
+      buttonMeshRef.current.add(cubeMesh);
+      cubeRef.current = cubeMesh;
 
       return () => {
-        buttonMeshRef.current?.remove(meshToUse);
-        meshToUse.geometry.dispose();
-        meshToUse.material.dispose();
+        buttonMeshRef.current?.remove(cubeMesh);
+        cubeMesh.geometry.dispose();
+        cubeMesh.material.dispose();
       };
     }
-  }, [cubeMesh, cubeMeshAlt]);
+  }, [cubeMesh]);
 
   return (
     <group ref={ref} {...props}>
