@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(& \\(Get-Content graphify-out\\\\.graphify_python\\) graphify-out\\\\_step_ast.py)",
+      "PowerShell(& \\(Get-Content graphify-out\\\\.graphify_python\\) graphify-out\\\\_cache_check.py)",
+      "PowerShell(& \\(Get-Content graphify-out\\\\.graphify_python\\) graphify-out\\\\_merge_chunks.py)",
+      "PowerShell(& \\(Get-Content graphify-out\\\\.graphify_python\\) graphify-out\\\\_step_build.py)",
+      "PowerShell(& \\(Get-Content graphify-out\\\\.graphify_python\\) graphify-out\\\\_inspect_communities.py)",
+      "Bash(rm -f graphify-out/.graphify_chunk_*.json graphify-out/.graphify_detect.json graphify-out/.graphify_extract.json graphify-out/.graphify_ast.json graphify-out/.graphify_semantic.json graphify-out/.graphify_semantic_new.json graphify-out/.graphify_cached.json graphify-out/.graphify_uncached.txt graphify-out/.graphify_analysis.json graphify-out/.graphify_labels.json graphify-out/_step_*.py graphify-out/_merge_*.py graphify-out/_cache_*.py graphify-out/_inspect_*.py 2>/dev/null; ls graphify-out/)"
+    ],
+    "additionalDirectories": [
+      "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\graphify-out"
+    ]
+  }
+}

@@ -201,25 +201,31 @@ export interface TestimonialVideo {
   video: string;
 }
 
+import sigmaTestimonial from '../assets/videos/Testimonial_omar_sigma.mp4';
+import helalTestimonial from '../assets/videos/Testimonial_ahmed_helal.mp4';
+import meanaTestimonial from '../assets/videos/Testimonial_ahmed_hesham.mp4';
+import nafasTestimonial from '../assets/videos/Testimonial_nour_rashdan.mp4';
+import laundorTestimonial from '../assets/videos/Testimonial_zyad_laundor.mp4';
+
 export const TestimonialVideos: TestimonialVideo[] = [
   {
-    id: 'testimonial-3',
-    video:
-      'https://res.cloudinary.com/deqfby6bi/video/upload/v1768511514/Sigma_Testimonial_1_k8uipf.mp4',
+    id: 'testimonial-1',
+    video: sigmaTestimonial,
   },
   {
     id: 'testimonial-2',
-    video:
-      'https://res.cloudinary.com/deqfby6bi/video/upload/v1768511505/Helal_Testimonial_1_vbqjna.mp4',
+    video: helalTestimonial,
   },
   {
-    id: 'testimonial-1',
-    video:
-      'https://res.cloudinary.com/deqfby6bi/video/upload/v1768511508/Meana_Testimonial_1_dtsxch.mp4',
+    id: 'testimonial-3',
+    video: meanaTestimonial,
   },
   {
     id: 'testimonial-4',
-    video:
-      'https://res.cloudinary.com/deqfby6bi/video/upload/v1768511523/nafas_testimonial_1_hsgych.mp4',
+    video: nafasTestimonial,
+  },
+  {
+    id: 'testimonial-5',
+    video: laundorTestimonial,
   },
 ];

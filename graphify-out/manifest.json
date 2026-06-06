@@ -1,0 +1,417 @@
+{
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\eslint.config.js": {
+    "mtime": 1770056410.6114686,
+    "ast_hash": "bd004944a557ff2db5750b2b6a7e456c",
+    "semantic_hash": "bd004944a557ff2db5750b2b6a7e456c"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\package.json": {
+    "mtime": 1770056410.631439,
+    "ast_hash": "8c1f004a766f9a114e0512e8b8d9123e",
+    "semantic_hash": "8c1f004a766f9a114e0512e8b8d9123e"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\App.tsx": {
+    "mtime": 1770056481.4493608,
+    "ast_hash": "1d9d7a0f8e8d24ee02ffdbcd5cff80fe",
+    "semantic_hash": "1d9d7a0f8e8d24ee02ffdbcd5cff80fe"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\js\\FlakesTexture.ts": {
+    "mtime": 1770056481.5255637,
+    "ast_hash": "b582be470a4e745a4c617c418ae1ceae",
+    "semantic_hash": "b582be470a4e745a4c617c418ae1ceae"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\AnimatedText.example.tsx": {
+    "mtime": 1770056481.6286561,
+    "ast_hash": "94abb907bced632bc24201a9d5effa62",
+    "semantic_hash": "94abb907bced632bc24201a9d5effa62"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\AnimatedText.tsx": {
+    "mtime": 1770056481.632666,
+    "ast_hash": "967adcc2d243998db796400a8b5ff829",
+    "semantic_hash": "967adcc2d243998db796400a8b5ff829"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\AnimatedTextRotation.tsx": {
+    "mtime": 1770056481.6353414,
+    "ast_hash": "4c3242918cf7c243a3d9514b8d52947f",
+    "semantic_hash": "4c3242918cf7c243a3d9514b8d52947f"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\Button3d.tsx": {
+    "mtime": 1770056481.6393628,
+    "ast_hash": "99cc6144d98e76364de9e5db57d99089",
+    "semantic_hash": "99cc6144d98e76364de9e5db57d99089"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\Button3dWrapper.tsx": {
+    "mtime": 1770320345.5956707,
+    "ast_hash": "a6ac30ae592d585e60cd576c377b9e0f",
+    "semantic_hash": "a6ac30ae592d585e60cd576c377b9e0f"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\Calendar.tsx": {
+    "mtime": 1776745453.3877752,
+    "ast_hash": "31e8b9988196f8181f3bc12ee141f919",
+    "semantic_hash": "31e8b9988196f8181f3bc12ee141f919"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\CalendarTemp.tsx": {
+    "mtime": 1772375596.1076531,
+    "ast_hash": "955ba33415a7232e228c7e54f0e3a74b",
+    "semantic_hash": "955ba33415a7232e228c7e54f0e3a74b"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\HDREnvironment.tsx": {
+    "mtime": 1770056481.6554146,
+    "ast_hash": "b45102ff6517ea2f94fdba8ea8f99103",
+    "semantic_hash": "b45102ff6517ea2f94fdba8ea8f99103"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\HDREnvironmentDefault.tsx": {
+    "mtime": 1770056481.660232,
+    "ast_hash": "b0f614bcf592bac5e0b6a0db2022adde",
+    "semantic_hash": "b0f614bcf592bac5e0b6a0db2022adde"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\Hero3DModel.tsx": {
+    "mtime": 1770320457.455941,
+    "ast_hash": "1845039b8e185191c5f64c5a993e9be5",
+    "semantic_hash": "1845039b8e185191c5f64c5a993e9be5"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\HeroImageDistortion.tsx": {
+    "mtime": 1770056481.671267,
+    "ast_hash": "ff8eb3de5c8ff21e785f0a4f43c6b165",
+    "semantic_hash": "ff8eb3de5c8ff21e785f0a4f43c6b165"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\Particle3DSection.tsx": {
+    "mtime": 1770056481.676293,
+    "ast_hash": "0a328674fea9599a77445b90409cc330",
+    "semantic_hash": "0a328674fea9599a77445b90409cc330"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\ProjectsSection.tsx": {
+    "mtime": 1770056481.6893406,
+    "ast_hash": "b61657a98644a9d60a1b94cf890d737c",
+    "semantic_hash": "b61657a98644a9d60a1b94cf890d737c"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\ProjectsSectionDesktop.tsx": {
+    "mtime": 1770056481.6923485,
+    "ast_hash": "b45b47af215fd93ed1c93c81c22cc800",
+    "semantic_hash": "b45b47af215fd93ed1c93c81c22cc800"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\ProjectsSectionMobile.tsx": {
+    "mtime": 1770056481.701406,
+    "ast_hash": "03d53482d66379b052326b7039f90d7c",
+    "semantic_hash": "03d53482d66379b052326b7039f90d7c"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\ScrollProgress.tsx": {
+    "mtime": 1770056481.7034116,
+    "ast_hash": "3298693f4fda8d6e65f701de2a5dbf29",
+    "semantic_hash": "3298693f4fda8d6e65f701de2a5dbf29"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\ScrollTrigger3DSection.tsx": {
+    "mtime": 1770056481.7084339,
+    "ast_hash": "cce218d7013aa1054f0d2b9662bc72c6",
+    "semantic_hash": "cce218d7013aa1054f0d2b9662bc72c6"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\StarryBackground.tsx": {
+    "mtime": 1770056481.710438,
+    "ast_hash": "772759828f9223fe108fce891e24f9d5",
+    "semantic_hash": "772759828f9223fe108fce891e24f9d5"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\TestimonialsSection.tsx": {
+    "mtime": 1770056481.7169669,
+    "ast_hash": "d7018f5ccf5fe10b9d398bf07ed40fb9",
+    "semantic_hash": "d7018f5ccf5fe10b9d398bf07ed40fb9"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\TestimonialsSectionDefault.tsx": {
+    "mtime": 1770056481.727518,
+    "ast_hash": "0e7f883eced91cefd130d83e36046f51",
+    "semantic_hash": "0e7f883eced91cefd130d83e36046f51"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\pageNotFound\\index.tsx": {
+    "mtime": 1770056481.7353942,
+    "ast_hash": "0ae1103579331b8eb34b2803c38b9c56",
+    "semantic_hash": "0ae1103579331b8eb34b2803c38b9c56"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\constants\\index.ts": {
+    "mtime": 1778242874.9935775,
+    "ast_hash": "1185ceb6264b4d04f5512a764b6a2d6f",
+    "semantic_hash": "1185ceb6264b4d04f5512a764b6a2d6f"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\context\\ThemeContext.ts": {
+    "mtime": 1770056481.7555315,
+    "ast_hash": "fd8ef7ded109b1d8bb5d70ed0b879ead",
+    "semantic_hash": "fd8ef7ded109b1d8bb5d70ed0b879ead"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\global\\CustomCursor.tsx": {
+    "mtime": 1770056481.7654784,
+    "ast_hash": "d322d56078cc11ea28fd746ae51c8edf",
+    "semantic_hash": "d322d56078cc11ea28fd746ae51c8edf"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\global\\Preloader.tsx": {
+    "mtime": 1770320345.072449,
+    "ast_hash": "39561bb186a1a6fc23596559d64910b7",
+    "semantic_hash": "39561bb186a1a6fc23596559d64910b7"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\global\\StarryBackground.tsx": {
+    "mtime": 1770056481.771279,
+    "ast_hash": "5bc1c63a6aa2f3372ab4996f8bf16742",
+    "semantic_hash": "5bc1c63a6aa2f3372ab4996f8bf16742"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\hooks\\useLenis.ts": {
+    "mtime": 1770056481.7820048,
+    "ast_hash": "7b4ae92d06f81c71b4493d72d26331d1",
+    "semantic_hash": "7b4ae92d06f81c71b4493d72d26331d1"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\hooks\\useScrollTrigger.ts": {
+    "mtime": 1770056481.7855115,
+    "ast_hash": "1daa384e07172ee058a131c71eebc724",
+    "semantic_hash": "1daa384e07172ee058a131c71eebc724"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\main.tsx": {
+    "mtime": 1770056481.4550953,
+    "ast_hash": "8009470c14aabca72aea21f01a6f635b",
+    "semantic_hash": "8009470c14aabca72aea21f01a6f635b"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\pages\\Exportation.tsx": {
+    "mtime": 1770319458.1261737,
+    "ast_hash": "e1c8a8f1416eeb2fd8d5c25dafa4a050",
+    "semantic_hash": "e1c8a8f1416eeb2fd8d5c25dafa4a050"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\pages\\booking-successful\\index.tsx": {
+    "mtime": 1770320436.1163106,
+    "ast_hash": "2b951ea427c4967644cb1fc12380b01c",
+    "semantic_hash": "2b951ea427c4967644cb1fc12380b01c"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\pages\\calendar\\index.tsx": {
+    "mtime": 1770078610.7109597,
+    "ast_hash": "8fc27e107c8e48beb38f621351ca8f3b",
+    "semantic_hash": "8fc27e107c8e48beb38f621351ca8f3b"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\pages\\home\\HeroSection.tsx": {
+    "mtime": 1770056481.801077,
+    "ast_hash": "2f2eb4193c88062b7437106dd797527e",
+    "semantic_hash": "2f2eb4193c88062b7437106dd797527e"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\pages\\home\\HomeHeader.tsx": {
+    "mtime": 1770056481.805586,
+    "ast_hash": "cecee253da4b7b51fbdf885ba089905a",
+    "semantic_hash": "cecee253da4b7b51fbdf885ba089905a"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\pages\\home\\HomeSticky.tsx": {
+    "mtime": 1770056481.8096063,
+    "ast_hash": "554d63b207d21b67b94038b7f181de43",
+    "semantic_hash": "554d63b207d21b67b94038b7f181de43"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\pages\\home\\index.tsx": {
+    "mtime": 1770056481.8122606,
+    "ast_hash": "8d279ecc02bd6c07bd25a05aee517775",
+    "semantic_hash": "8d279ecc02bd6c07bd25a05aee517775"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\provider\\ThemeProvider.tsx": {
+    "mtime": 1770056481.8210306,
+    "ast_hash": "bb343522ae21ac1b5e537152c6fb6a56",
+    "semantic_hash": "bb343522ae21ac1b5e537152c6fb6a56"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\types\\Theme.ts": {
+    "mtime": 1770056481.832037,
+    "ast_hash": "af35ed9053e255f823f547b73f007fd3",
+    "semantic_hash": "af35ed9053e255f823f547b73f007fd3"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\utils\\revealAnimation.ts": {
+    "mtime": 1772375442.530781,
+    "ast_hash": "75d0cd7e80dd15eca24bb65a6a64d7f4",
+    "semantic_hash": "75d0cd7e80dd15eca24bb65a6a64d7f4"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\utils\\textSplitting.ts": {
+    "mtime": 1770056481.8355446,
+    "ast_hash": "e09340515233fafca2af0bb7fde21fc6",
+    "semantic_hash": "e09340515233fafca2af0bb7fde21fc6"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\tsconfig.app.json": {
+    "mtime": 1770056410.6414776,
+    "ast_hash": "06fed9d2d293837c0571529eaae7204a",
+    "semantic_hash": "06fed9d2d293837c0571529eaae7204a"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\tsconfig.json": {
+    "mtime": 1770056410.6434822,
+    "ast_hash": "a3d39fa780ebff65444de257f291ce6c",
+    "semantic_hash": "a3d39fa780ebff65444de257f291ce6c"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\tsconfig.node.json": {
+    "mtime": 1770056410.6490128,
+    "ast_hash": "8cbfe66b01df186a59330b65a70a8c15",
+    "semantic_hash": "8cbfe66b01df186a59330b65a70a8c15"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\vite.config.ts": {
+    "mtime": 1772375593.2346802,
+    "ast_hash": "45dd330997da62bc80fcdf55f7b7b577",
+    "semantic_hash": "45dd330997da62bc80fcdf55f7b7b577"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\OPTIMIZATION_RECOMMENDATIONS.md": {
+    "mtime": 1770056410.6233609,
+    "ast_hash": "0163245a54ee20de8bdc1ba46104e992",
+    "semantic_hash": "0163245a54ee20de8bdc1ba46104e992"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\README.md": {
+    "mtime": 1770056410.63545,
+    "ast_hash": "0eb6c115aef9d34b36fdc5c609c36cda",
+    "semantic_hash": "0eb6c115aef9d34b36fdc5c609c36cda"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\index.html": {
+    "mtime": 1770323701.8992915,
+    "ast_hash": "c0726c8e3a035914f62cf23d6164760b",
+    "semantic_hash": "c0726c8e3a035914f62cf23d6164760b"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\note.md": {
+    "mtime": 1770056410.6194065,
+    "ast_hash": "de3833bf8152024c6502577bcec2be2d",
+    "semantic_hash": "de3833bf8152024c6502577bcec2be2d"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\components\\Preloader.md": {
+    "mtime": 1770056481.6803024,
+    "ast_hash": "c49039cdb9230f61920f79608f47961f",
+    "semantic_hash": "c49039cdb9230f61920f79608f47961f"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\public\\frame.jpg": {
+    "mtime": 1770056481.4394982,
+    "ast_hash": "09894f1f5d23a993df6f82b4b0e9009b",
+    "semantic_hash": "09894f1f5d23a993df6f82b4b0e9009b"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\arrow-right.svg": {
+    "mtime": 1770056481.4597578,
+    "ast_hash": "d9171c443a03cba33f3f19a7a5121be2",
+    "semantic_hash": "d9171c443a03cba33f3f19a7a5121be2"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\corner.svg": {
+    "mtime": 1770056481.465142,
+    "ast_hash": "dc51a347ef61d7259c31b19943bc0e12",
+    "semantic_hash": "dc51a347ef61d7259c31b19943bc0e12"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\empty-leaf.svg": {
+    "mtime": 1770056481.4686117,
+    "ast_hash": "6b0bb068bb7b489e2206f6ea814b77ad",
+    "semantic_hash": "6b0bb068bb7b489e2206f6ea814b77ad"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\fill-leaf.svg": {
+    "mtime": 1770056481.4730928,
+    "ast_hash": "95f06b6f498802bcd311dfa275d5020c",
+    "semantic_hash": "95f06b6f498802bcd311dfa275d5020c"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\images\\first_frame.webp": {
+    "mtime": 1770056481.4954972,
+    "ast_hash": "43c1db4a4a32a643a1a4cda46fe864ce",
+    "semantic_hash": "43c1db4a4a32a643a1a4cda46fe864ce"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\images\\global.webp": {
+    "mtime": 1770056481.4954972,
+    "ast_hash": "ff98d501cd818c7b576a8060c49c5cb3",
+    "semantic_hash": "ff98d501cd818c7b576a8060c49c5cb3"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\images\\logo.png": {
+    "mtime": 1770056481.5040934,
+    "ast_hash": "b42a5f1c3dfb3f43662f21661bf3738d",
+    "semantic_hash": "b42a5f1c3dfb3f43662f21661bf3738d"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\images\\logo.svg": {
+    "mtime": 1770056481.5050974,
+    "ast_hash": "aec3af86010129d7baf65534c136c589",
+    "semantic_hash": "aec3af86010129d7baf65534c136c589"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\images\\noise.webp": {
+    "mtime": 1770056481.5050974,
+    "ast_hash": "7c90e2905c5f04e09646ab9278a42ccd",
+    "semantic_hash": "7c90e2905c5f04e09646ab9278a42ccd"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\images\\projector.webp": {
+    "mtime": 1770056481.512782,
+    "ast_hash": "2c0d5eec5c03db46501b6073afa4ca61",
+    "semantic_hash": "2c0d5eec5c03db46501b6073afa4ca61"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\images\\stars-mask.webp": {
+    "mtime": 1770056481.5178225,
+    "ast_hash": "98a769074d0a13709033d2d5ac123a35",
+    "semantic_hash": "98a769074d0a13709033d2d5ac123a35"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\logo-svg.svg": {
+    "mtime": 1770056481.475096,
+    "ast_hash": "984a2bdcd35e34741b26168ddac88965",
+    "semantic_hash": "984a2bdcd35e34741b26168ddac88965"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\models\\hdr.jpeg": {
+    "mtime": 1770056481.5354278,
+    "ast_hash": "2608c43c8e5a33fb1eb01249ebd3357e",
+    "semantic_hash": "2608c43c8e5a33fb1eb01249ebd3357e"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\projects\\Cozy Fragrances.webp": {
+    "mtime": 1770056481.5555487,
+    "ast_hash": "e699073ed2bd61dc7a870a4cd1644607",
+    "semantic_hash": "e699073ed2bd61dc7a870a4cd1644607"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\projects\\Crown.webp": {
+    "mtime": 1770056481.5555487,
+    "ast_hash": "cef56439877f81d2379ea0ab347e94a4",
+    "semantic_hash": "cef56439877f81d2379ea0ab347e94a4"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\projects\\Flexieve.webp": {
+    "mtime": 1770056481.5642843,
+    "ast_hash": "fca626debae892efcc0337c49e43e204",
+    "semantic_hash": "fca626debae892efcc0337c49e43e204"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\projects\\Fo7osat.webp": {
+    "mtime": 1770056481.5693617,
+    "ast_hash": "2ea57bd269eeeafccb1470fbd94d77d6",
+    "semantic_hash": "2ea57bd269eeeafccb1470fbd94d77d6"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\projects\\Furniture.webp": {
+    "mtime": 1770056481.5713656,
+    "ast_hash": "b7e9c97ad2c1082155db4972e534b506",
+    "semantic_hash": "b7e9c97ad2c1082155db4972e534b506"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\projects\\Goga Toys.webp": {
+    "mtime": 1770056481.5753114,
+    "ast_hash": "21b67031b8055e5523e6a0891cd7b77f",
+    "semantic_hash": "21b67031b8055e5523e6a0891cd7b77f"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\projects\\Laundor.webp": {
+    "mtime": 1770056481.5801215,
+    "ast_hash": "6f8270f0384e44ade711cd77721dd3b9",
+    "semantic_hash": "6f8270f0384e44ade711cd77721dd3b9"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\projects\\Mahla.webp": {
+    "mtime": 1770056481.5831313,
+    "ast_hash": "f02dda8bffa32bf80cc023f566330a67",
+    "semantic_hash": "f02dda8bffa32bf80cc023f566330a67"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\projects\\Maroof.webp": {
+    "mtime": 1770056481.5851352,
+    "ast_hash": "4b23e4aeb9a3d9cbce88e03507ff50e1",
+    "semantic_hash": "4b23e4aeb9a3d9cbce88e03507ff50e1"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\projects\\Nafas.webp": {
+    "mtime": 1770056481.5851352,
+    "ast_hash": "eb12d87d2f787f3ee5169dd06b2f285e",
+    "semantic_hash": "eb12d87d2f787f3ee5169dd06b2f285e"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\projects\\Performance.webp": {
+    "mtime": 1770056481.5931494,
+    "ast_hash": "7d97d08b4c49beaa9cad744f578b21a9",
+    "semantic_hash": "7d97d08b4c49beaa9cad744f578b21a9"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\projects\\Smile.webp": {
+    "mtime": 1770056481.596895,
+    "ast_hash": "26cdbba9aaad8b65afd7beeeb211f78b",
+    "semantic_hash": "26cdbba9aaad8b65afd7beeeb211f78b"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\projects\\Steelixe.webp": {
+    "mtime": 1770056481.599966,
+    "ast_hash": "1ee0ed62885925e42cd1e362604dc105",
+    "semantic_hash": "1ee0ed62885925e42cd1e362604dc105"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\projects\\Two.webp": {
+    "mtime": 1770056481.6039736,
+    "ast_hash": "bfea1d64cbda1fdff9f736b438f4b58a",
+    "semantic_hash": "bfea1d64cbda1fdff9f736b438f4b58a"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\projects\\Ultraman.webp": {
+    "mtime": 1770056481.607505,
+    "ast_hash": "c21b0da6e98fef3732b01ceae3d6cb39",
+    "semantic_hash": "c21b0da6e98fef3732b01ceae3d6cb39"
+  },
+  "H:\\Stellar\\Stellar.vision-master\\Stellar.vision-master\\src\\assets\\time.svg": {
+    "mtime": 1770056481.4794962,
+    "ast_hash": "3e87f2c3be59cad7f52f71a41872aef1",
+    "semantic_hash": "3e87f2c3be59cad7f52f71a41872aef1"
+  }
+}

@@ -81,6 +81,92 @@ interface DayAvailabilityResponse {
   slots: TimeSlot[];
 }
 
+/** Only API-available slots that are still in the future (hide unavailable + past). */
+const filterBookableSlots = (slots: TimeSlot[]): TimeSlot[] => {
+  const nowMs = Date.now();
+  return slots.filter(
+    (slot) =>
+      slot.status === 'available' &&
+      new Date(slot.start_time).getTime() > nowMs,
+  );
+};
+
+const dayAvailabilityKey = (year: number, month: number, day: number) =>
+  `${year}-${month}-${day}`;
+
+const MONTH_ABBR_TO_INDEX: Record<string, number> = {
+  Jan: 0,
+  Feb: 1,
+  Mar: 2,
+  Apr: 3,
+  May: 4,
+  Jun: 5,
+  Jul: 6,
+  Aug: 7,
+  Sep: 8,
+  Oct: 9,
+  Nov: 10,
+  Dec: 11,
+};
+
+/** Same window as calendar booking: current month + next 2 (0-based month index). */
+const isMonthInBookingWindow = (month: number, year: number): boolean => {
+  const now = new Date();
+  const curM = now.getMonth();
+  const curY = now.getFullYear();
+  const monthsFromCurrent = (year - curY) * 12 + (month - curM);
+  return monthsFromCurrent >= 0 && monthsFromCurrent <= 2;
+};
+
+/** List days the year API marks available, limited to the 3-month booking window (for slot prefetch). */
+const buildPrefetchDayTasks = (
+  availableDaysData: AvailableDaysData[],
+): Array<{ year: number; month: number; day: number }> => {
+  const out: Array<{ year: number; month: number; day: number }> = [];
+  for (const row of availableDaysData) {
+    const monthIdx = MONTH_ABBR_TO_INDEX[row.month];
+    if (monthIdx === undefined) continue;
+    if (!isMonthInBookingWindow(monthIdx, row.year)) continue;
+    for (const day of row.availableDays) {
+      out.push({ year: row.year, month: monthIdx, day });
+    }
+  }
+  return out;
+};
+
+const getCalendarApiBaseUrl = () =>
+  import.meta.env.DEV
+    ? '/api'
+    : 'https://stellar-vision-booking-api-production.up.railway.app/api';
+
+/** Fetch day slots and return bookable-only list; null on network/HTTP error or abort (do not treat as “no slots”). */
+const fetchDayBookableSlots = async (
+  year: number,
+  month: number,
+  day: number,
+  timezone: string,
+  signal?: AbortSignal,
+): Promise<TimeSlot[] | null> => {
+  try {
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const baseUrl = getCalendarApiBaseUrl();
+    const url = `${baseUrl}/availability/day?date=${dateStr}&timezone=${encodeURIComponent(timezone)}`;
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+      mode: 'cors',
+      signal,
+    });
+    if (!response.ok) return null;
+    const data: DayAvailabilityResponse = await response.json();
+    return filterBookableSlots(data.slots ?? []);
+  } catch (e) {
+    if (e instanceof Error && e.name === 'AbortError') throw e;
+    return null;
+  }
+};
+
 interface CalendarState {
   viewState: ViewState;
   currentMonth: number;
@@ -457,6 +543,14 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
   >([]);
   const [openMethod, setOpenMethod] = useState<'click' | 'scroll' | null>(null);
   const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([]);
+  const [daysWithNoValidSlots, setDaysWithNoValidSlots] = useState<Set<string>>(
+    () => new Set(),
+  );
+  /** Days with no bookable slots after quiet prefetch (year API can list them anyway). */
+  const [prefetchNoSlotsDays, setPrefetchNoSlotsDays] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const [isPrefetchingDaySlots, setIsPrefetchingDaySlots] = useState(false);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -716,10 +810,7 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
     try {
       // Use proxy URL in development, full URL in production
       // The proxy is configured in vite.config.ts
-      const isDevelopment = import.meta.env.DEV;
-      const baseUrl = isDevelopment
-        ? '/api'
-        : 'https://stellar-vision-booking-api-production.up.railway.app/api';
+      const baseUrl = getCalendarApiBaseUrl();
 
       // Fetch data for all required years in parallel
       const fetchPromises = years.map((year) => {
@@ -803,58 +894,98 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
     };
   }, [state.currentYear, state.timezone, state.currentMonth]);
 
-  // Fetch available time slots for a specific day
+  // User-click “no slots” blocks: only reset when timezone changes (keep across month nav)
+  useEffect(() => {
+    setDaysWithNoValidSlots(new Set());
+  }, [state.timezone]);
+
+  // After year availability loads, prefetch day slots for the 3-month window so empty days disable before click
+  useEffect(() => {
+    const abortController = new AbortController();
+    if (!availableDaysData.length) {
+      setPrefetchNoSlotsDays(new Set());
+      setIsPrefetchingDaySlots(false);
+      return;
+    }
+
+    const tasks = buildPrefetchDayTasks(availableDaysData);
+    if (tasks.length === 0) {
+      setPrefetchNoSlotsDays(new Set());
+      setIsPrefetchingDaySlots(false);
+      return;
+    }
+
+    setIsPrefetchingDaySlots(true);
+    const emptyKeys = new Set<string>();
+    const chunkSize = 6;
+
+    void (async () => {
+      for (let i = 0; i < tasks.length; i += chunkSize) {
+        if (abortController.signal.aborted) return;
+        const chunk = tasks.slice(i, i + chunkSize);
+        const results = await Promise.all(
+          chunk.map(({ year, month, day }) =>
+            fetchDayBookableSlots(
+              year,
+              month,
+              day,
+              state.timezone,
+              abortController.signal,
+            ).then((slots) => ({ year, month, day, slots })),
+          ),
+        );
+        for (const { year, month, day, slots } of results) {
+          if (abortController.signal.aborted) return;
+          if (slots !== null && slots.length === 0) {
+            emptyKeys.add(dayAvailabilityKey(year, month, day));
+          }
+        }
+      }
+      if (!abortController.signal.aborted) {
+        setPrefetchNoSlotsDays(emptyKeys);
+      }
+      if (!abortController.signal.aborted) {
+        setIsPrefetchingDaySlots(false);
+      }
+    })();
+
+    return () => {
+      abortController.abort();
+    };
+  }, [availableDaysData, state.timezone]);
+
+  // Fetch available time slots for a specific day.
+  // Returns filtered slots on success, null on abort/error (caller must not treat null as "no slots").
   const fetchDaySlots = async (
     year: number,
     month: number,
     day: number,
     timezone: string,
     signal?: AbortSignal,
-  ) => {
+  ): Promise<TimeSlot[] | null> => {
     setIsLoadingSlots(true);
     try {
-      // Format date as YYYY-MM-DD
-      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-
-      // Use proxy URL in development, full URL in production
-      const isDevelopment = import.meta.env.DEV;
-      const baseUrl = isDevelopment
-        ? '/api'
-        : 'https://stellar-vision-booking-api-production.up.railway.app/api';
-      const url = `${baseUrl}/availability/day?date=${dateStr}&timezone=${encodeURIComponent(timezone)}`;
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-        },
-        mode: 'cors',
-        signal, // Add abort signal
-      });
-
-      if (!response.ok) {
-        throw new Error(
-          `Failed to fetch slots: ${response.status} ${response.statusText}`,
-        );
-      }
-
-      const data: DayAvailabilityResponse = await response.json();
-
-      // Filter only available slots
-      const available = data.slots.filter(
-        (slot) => slot.status === 'available',
+      const bookable = await fetchDayBookableSlots(
+        year,
+        month,
+        day,
+        timezone,
+        signal,
       );
-
-      setAvailableSlots(available);
+      if (bookable === null) {
+        setAvailableSlots([]);
+        return null;
+      }
+      setAvailableSlots(bookable);
+      return bookable;
     } catch (error) {
       // Don't log abort errors - they're expected when component unmounts or dependencies change
       if (error instanceof Error && error.name === 'AbortError') {
-        // Silently handle abort - this is expected behavior
-        setIsLoadingSlots(false);
-        return;
+        return null;
       }
       console.error('Error fetching day slots:', error);
       setAvailableSlots([]);
+      return null;
     } finally {
       setIsLoadingSlots(false);
     }
@@ -863,16 +994,33 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
   // Fetch slots when a day is selected (viewState becomes 3)
   useEffect(() => {
     const abortController = new AbortController();
+    let cancelled = false;
 
     if (state.viewState === 3 && state.selectedDate) {
       const { year, month, day } = state.selectedDate;
-      fetchDaySlots(year, month, day, state.timezone, abortController.signal);
+      void fetchDaySlots(
+        year,
+        month,
+        day,
+        state.timezone,
+        abortController.signal,
+      ).then((bookable) => {
+        if (cancelled || abortController.signal.aborted || bookable === null) {
+          return;
+        }
+        if (bookable.length === 0) {
+          const key = dayAvailabilityKey(year, month, day);
+          setDaysWithNoValidSlots((prev) => new Set(prev).add(key));
+          dispatch({ type: 'GO_BACK' });
+        }
+      });
     } else {
       // Clear slots when not in time selection view
       setAvailableSlots([]);
     }
 
     return () => {
+      cancelled = true;
       abortController.abort();
     };
   }, [state.viewState, state.selectedDate, state.timezone]);
@@ -1113,17 +1261,20 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
     return formatter.format(date);
   };
 
-  // Get available times - use fetched slots if available, otherwise use generated times - memoized
+  // Get available times - use fetched slots in time-picker (state 3); never fall back to fake slots there
   const availableTimes = useMemo(() => {
     if (availableSlots.length > 0) {
       return availableSlots.map((slot) =>
         formatSlotTime(slot.start_time, state.timezone),
       );
     }
+    if (state.viewState === 3) {
+      return [];
+    }
     return baseAvailableTimes.map((time) =>
       convertTimeToTimezone(time, state.timezone),
     );
-  }, [availableSlots, state.timezone, baseAvailableTimes]);
+  }, [availableSlots, state.timezone, state.viewState, baseAvailableTimes]);
 
   // Auto-complete animation state when calendar opens
   useEffect(() => {
@@ -1327,6 +1478,16 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
 
     // Check if day is in available days list - if not, disable it
     if (!isDayAvailable(day, state.currentMonth, state.currentYear)) {
+      return true;
+    }
+
+    const key = dayAvailabilityKey(
+      state.currentYear,
+      state.currentMonth,
+      day,
+    );
+    // Prefetch or click: day listed by year API but no bookable slots
+    if (prefetchNoSlotsDays.has(key) || daysWithNoValidSlots.has(key)) {
       return true;
     }
 
@@ -1762,10 +1923,7 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
       const bookingData = formatBookingData();
 
       // Use proxy URL in development, full URL in production
-      const isDevelopment = import.meta.env.DEV;
-      const baseUrl = isDevelopment
-        ? '/api'
-        : 'https://stellar-vision-booking-api-production.up.railway.app/api';
+      const baseUrl = getCalendarApiBaseUrl();
       const url = `${baseUrl}/bookings/create`;
 
       const response = await fetch(url, {
@@ -2096,13 +2254,29 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
                       (d) =>
                         d.year === state.currentYear && d.month === monthAbbr,
                     );
-                    const noDaysThisMonth =
-                      !monthData || monthData.availableDays.length === 0;
-                    return noDaysThisMonth ? (
-                      <p className="text-textPrimary mb-3 text-center text-xs opacity-80 lg:text-sm">
-                        There are no days available this month.
-                      </p>
-                    ) : null;
+                    if (!monthData || monthData.availableDays.length === 0) {
+                      return (
+                        <p className="text-textPrimary mb-3 text-center text-xs opacity-80 lg:text-sm">
+                          There are no days available this month.
+                        </p>
+                      );
+                    }
+                    if (isPrefetchingDaySlots) return null;
+                    const y = state.currentYear;
+                    const m = state.currentMonth;
+                    const hasBookableDay = monthData.availableDays.some(
+                      (d) =>
+                        !prefetchNoSlotsDays.has(dayAvailabilityKey(y, m, d)) &&
+                        !daysWithNoValidSlots.has(dayAvailabilityKey(y, m, d)),
+                    );
+                    if (!hasBookableDay) {
+                      return (
+                        <p className="text-textPrimary mb-3 text-center text-xs opacity-80 lg:text-sm">
+                          There are no days available this month.
+                        </p>
+                      );
+                    }
+                    return null;
                   })()}
 
                   {/* Calendar Grid */}
