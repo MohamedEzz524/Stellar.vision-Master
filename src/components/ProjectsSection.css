@@ -5,6 +5,89 @@
   padding-top: 430px; /* Large padding to ensure first element is fully visible */
 }
 
+/* B — 3D parallax tilt + cursor spotlight + subtle scale on card hover.
+   --tilt-x/--tilt-y in degrees, --mouse-x/--mouse-y in %, --hover-strength 0..1
+   driven by the JS mousemove handler. */
+.case-wrapper {
+  position: relative;
+  transform: perspective(1200px) rotateX(var(--tilt-x, 0deg))
+    rotateY(var(--tilt-y, 0deg))
+    scale3d(
+      calc(1 + var(--hover-strength, 0) * 0.04),
+      calc(1 + var(--hover-strength, 0) * 0.04),
+      1
+    );
+  transform-style: preserve-3d;
+  transition:
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.32s ease;
+}
+
+/* Cursor spotlight — soft white radial gradient at cursor position. */
+.case-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.06) 25%,
+    transparent 55%
+  );
+  opacity: var(--hover-strength, 0);
+  transition: opacity 0.28s ease;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  z-index: 6;
+  border-radius: inherit;
+}
+
+/* D — Rotated strikethrough line on card title hover.
+   Replaces the previous underline+arrow with a diagonal sweep that draws
+   left-to-right across the title at a slight tilt. */
+.case-heading {
+  position: relative;
+  display: inline-block;
+}
+
+.case-heading::after {
+  content: '';
+  position: absolute;
+  left: -6%;
+  top: 50%;
+  width: 112%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.95);
+  transform-origin: left center;
+  transform: rotate(-4deg) scaleX(0);
+  transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  pointer-events: none;
+}
+
+.case-wrapper:hover .case-heading::after {
+  transform: rotate(-4deg) scaleX(1);
+}
+
+/* Stagger the strikethrough angle per card position so each one feels unique */
+.case:nth-child(3n) .case-heading::after {
+  transform: rotate(3deg) scaleX(0);
+}
+.case:nth-child(3n) .case-wrapper:hover .case-heading::after {
+  transform: rotate(3deg) scaleX(1);
+}
+.case:nth-child(4n) .case-heading::after {
+  transform: rotate(-7deg) scaleX(0);
+}
+.case:nth-child(4n) .case-wrapper:hover .case-heading::after {
+  transform: rotate(-7deg) scaleX(1);
+}
+.case:nth-child(5n) .case-heading::after {
+  transform: rotate(5deg) scaleX(0);
+}
+.case:nth-child(5n) .case-wrapper:hover .case-heading::after {
+  transform: rotate(5deg) scaleX(1);
+}
+
 .section.cc--clipx.cc--cases .container {
   position: relative;
   width: 100%;

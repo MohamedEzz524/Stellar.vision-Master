@@ -720,15 +720,19 @@ const ProjectsSectionMobile = ({
         className="projects-mobile-navigation font-grid"
       >
         <button
+          type="button"
           onClick={() => scrollToSection('prev')}
           className="projects-nav-button projects-nav-button-prev calendar-day-disabled"
+          data-cursor="link"
         >
           Get Back
         </button>
 
         <button
+          type="button"
           onClick={() => scrollToSection('next')}
           className="projects-nav-button projects-nav-button-next big calendar-day-available"
+          data-cursor="cta"
         >
           Skip to Next
         </button>
@@ -762,12 +766,16 @@ const ProjectsSectionMobile = ({
               rel="noopener noreferrer"
               className="card-link"
               aria-label={`View project: ${activeProject.title}`}
+              data-cursor="image"
+              data-cursor-label="View site"
             />
           ) : (
             <Link
               to={activeProject.href}
               className="card-link"
               aria-label={`View project: ${activeProject.title}`}
+              data-cursor="image"
+              data-cursor-label="View case"
             />
           )}
         </div>

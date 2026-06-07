@@ -249,6 +249,384 @@
   }
 }
 
+/* ============================================================
+   CINEMATIC VIEWFINDER OVERLAY
+   Corner brackets + REC indicator + timecode counter, layered
+   over the active video.
+   ============================================================ */
+
+.viewfinder-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 15;
+}
+
+/* Corner brackets — L-shaped marks at the four video corners */
+.viewfinder-bracket {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+}
+
+.viewfinder-bracket::before,
+.viewfinder-bracket::after {
+  content: '';
+  position: absolute;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
+}
+
+.viewfinder-bracket::before {
+  width: 100%;
+  height: 2px;
+}
+
+.viewfinder-bracket::after {
+  width: 2px;
+  height: 100%;
+}
+
+.viewfinder-bracket-tl {
+  top: 12px;
+  left: 12px;
+}
+.viewfinder-bracket-tl::before {
+  top: 0;
+  left: 0;
+}
+.viewfinder-bracket-tl::after {
+  top: 0;
+  left: 0;
+}
+
+.viewfinder-bracket-tr {
+  top: 12px;
+  right: 12px;
+}
+.viewfinder-bracket-tr::before {
+  top: 0;
+  right: 0;
+}
+.viewfinder-bracket-tr::after {
+  top: 0;
+  right: 0;
+}
+
+.viewfinder-bracket-bl {
+  bottom: 12px;
+  left: 12px;
+}
+.viewfinder-bracket-bl::before {
+  bottom: 0;
+  left: 0;
+}
+.viewfinder-bracket-bl::after {
+  bottom: 0;
+  left: 0;
+}
+
+.viewfinder-bracket-br {
+  bottom: 12px;
+  right: 12px;
+}
+.viewfinder-bracket-br::before {
+  bottom: 0;
+  right: 0;
+}
+.viewfinder-bracket-br::after {
+  bottom: 0;
+  right: 0;
+}
+
+/* REC indicator — pulsing red dot + REC label, top-left */
+.viewfinder-rec {
+  position: absolute;
+  top: 18px;
+  left: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.55);
+}
+
+.viewfinder-rec-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff3030;
+  box-shadow:
+    0 0 6px rgba(255, 48, 48, 0.9),
+    0 0 12px rgba(255, 48, 48, 0.4);
+  animation: viewfinder-rec-pulse 1.3s ease-in-out infinite;
+}
+
+@keyframes viewfinder-rec-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.85);
+  }
+}
+
+/* Timecode counter — MM:SS:FF, top-right */
+.viewfinder-tc {
+  position: absolute;
+  top: 18px;
+  right: 42px;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-family: 'Space Mono', monospace;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.55);
+}
+
+.viewfinder-tc-label {
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  opacity: 0.7;
+}
+
+.viewfinder-tc-value {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .viewfinder-bracket {
+    width: 16px;
+    height: 16px;
+  }
+  .viewfinder-rec,
+  .viewfinder-tc {
+    font-size: 0.55rem;
+    top: 12px;
+  }
+  .viewfinder-rec {
+    left: 32px;
+  }
+  .viewfinder-tc {
+    right: 32px;
+  }
+}
+
+/* Section title — uses the brand display font (Gridular / font-grid),
+   scrambles on cursor hover via animateTextRandomization. */
+.testimonials-title {
+  text-align: center;
+  font-size: clamp(2rem, 4.5vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.95);
+  text-transform: uppercase;
+  margin: 0 auto 2rem;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  position: relative;
+  z-index: 40;
+  width: fit-content;
+  pointer-events: auto;
+}
+
+/* Celestial decor — scattered twinkling stars + small orbital ring.
+   Brand continuity with the HomeHeader orbit/stars. */
+.testimonials-decor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Small orbital ring with satellite in the top-right corner */
+.testimonials-decor-orbit {
+  position: absolute;
+  top: 6%;
+  right: 4%;
+  width: 7rem;
+  height: 7rem;
+}
+
+.testimonials-decor-orbit::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+}
+
+.testimonials-decor-orbit::after {
+  content: '';
+  position: absolute;
+  inset: 28%;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.testimonials-decor-orbit-rotator {
+  position: absolute;
+  inset: 0;
+  animation: testimonials-decor-orbit-spin 20s linear infinite;
+  will-change: transform;
+}
+
+.testimonials-decor-orbit-satellite {
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 0 6px rgba(255, 255, 255, 0.9),
+    0 0 14px rgba(255, 255, 255, 0.4);
+}
+
+@keyframes testimonials-decor-orbit-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .testimonials-decor-orbit {
+    width: 5rem;
+    height: 5rem;
+    top: 2%;
+    right: 2%;
+  }
+}
+
+/* Soft glow halo around the video — sits behind the video wrapper.
+   Reads as the projector beam landing on the screen. */
+.testimonials-video-container::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 130%;
+  height: 130%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 250, 235, 0.18) 0%,
+    rgba(255, 245, 220, 0.08) 35%,
+    rgba(255, 245, 220, 0.02) 60%,
+    transparent 80%
+  );
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(20px);
+  animation: testimonials-halo-breathe 4.5s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+
+@keyframes testimonials-halo-breathe {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.04);
+  }
+}
+
+/* Cinematic progress bar — tied to active video's currentTime.
+   Sits just under the video as a thin track. */
+.testimonials-progress {
+  position: relative;
+  width: min(23vw, 400px);
+  max-width: 90%;
+  margin: 0.9rem auto 0;
+}
+
+.testimonials-progress-track {
+  position: relative;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.testimonials-progress-fill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.85),
+    rgba(255, 255, 255, 1)
+  );
+  transform-origin: left center;
+  transform: scaleX(0);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 1023px) {
+  .testimonials-progress {
+    width: 80%;
+  }
+}
+
+/* Pagination dots below the video */
+.testimonials-pagination {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 1.4rem auto 0;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.32);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  width: fit-content;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+}
+
+.testimonials-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.32);
+  transition:
+    width 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background 0.3s ease,
+    box-shadow 0.4s ease;
+}
+
+.testimonials-dot-active {
+  width: 22px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow:
+    0 0 6px rgba(255, 255, 255, 0.55),
+    0 0 14px rgba(255, 255, 255, 0.25);
+}
+
+
 .testimonials-play-overlay {
   position: absolute;
   inset: 0;

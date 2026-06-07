@@ -85,14 +85,140 @@ const HeroSection = () => {
     } as const;
 
     h2Elements.forEach((h2) => {
-      cleanupFunctionsRef.current.push(
-        animateTextRandomization(h2, animationConfig),
-      );
+      const handle = animateTextRandomization(h2, animationConfig);
+      cleanupFunctionsRef.current.push(handle.cleanup);
     });
 
     return () => {
       cleanupFunctionsRef.current.forEach((cleanup) => cleanup());
       cleanupFunctionsRef.current = [];
+    };
+  }, []);
+
+  // 3D parallax on text rows + letter magnetism on each char.
+  // Rows shift slightly with cursor X/Y (different magnitudes per row =
+  // stereoscopic depth). Each .char inside the h2s is pulled toward the cursor
+  // when within ~170px, with quadratic falloff. All transforms are smoothed via
+  // lerp so movement glides instead of snapping. Disabled on non-hover devices
+  // and when prefers-reduced-motion.
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const supportsHover = window.matchMedia(
+      '(hover: hover) and (pointer: fine)',
+    ).matches;
+    const prefersReduced = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+    if (!supportsHover || prefersReduced) return;
+
+    let rafId = 0;
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let smoothedX = mouseX;
+    let smoothedY = mouseY;
+
+    type CharData = {
+      el: HTMLElement;
+      x: number;
+      y: number;
+      curX: number;
+      curY: number;
+    };
+    let charsData: CharData[] = [];
+    let rows: HTMLElement[] = [];
+    let rowDepths: number[] = [];
+    let cacheDirty = true;
+
+    const updateCache = () => {
+      rows = Array.from(section.querySelectorAll<HTMLElement>('h2'));
+      rowDepths = rows.map((_, i) => 0.018 + (i % 4) * 0.013);
+      const chars = section.querySelectorAll<HTMLElement>('h2 .char');
+      const oldMap = new Map(charsData.map((c) => [c.el, c]));
+      charsData = Array.from(chars).map((el) => {
+        const r = el.getBoundingClientRect();
+        const prev = oldMap.get(el);
+        return {
+          el,
+          x: r.left + r.width / 2,
+          y: r.top + r.height / 2,
+          curX: prev?.curX ?? 0,
+          curY: prev?.curY ?? 0,
+        };
+      });
+      cacheDirty = false;
+    };
+
+    const tick = () => {
+      smoothedX += (mouseX - smoothedX) * 0.1;
+      smoothedY += (mouseY - smoothedY) * 0.1;
+
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      const offX = smoothedX - cx;
+      const offY = smoothedY - cy;
+
+      for (let i = 0; i < rows.length; i++) {
+        const d = rowDepths[i];
+        rows[i].style.transform = `translate3d(${(-offX * d * 0.35).toFixed(2)}px, ${(-offY * d * 0.3).toFixed(2)}px, 0)`;
+      }
+
+      if (cacheDirty) updateCache();
+
+      const R = 170;
+      const STRENGTH = 18;
+      for (const c of charsData) {
+        const dx = mouseX - c.x;
+        const dy = mouseY - c.y;
+        const d2 = dx * dx + dy * dy;
+        let tx = 0;
+        let ty = 0;
+        if (d2 < R * R) {
+          const d = Math.sqrt(d2) || 1;
+          const t = 1 - d / R;
+          const force = t * t * STRENGTH;
+          tx = (dx / d) * force;
+          ty = (dy / d) * force;
+        }
+        c.curX += (tx - c.curX) * 0.2;
+        c.curY += (ty - c.curY) * 0.2;
+        c.el.style.transform = `translate(${c.curX.toFixed(2)}px, ${c.curY.toFixed(2)}px)`;
+      }
+
+      rafId = requestAnimationFrame(tick);
+    };
+
+    const onMouse = (e: MouseEvent) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    };
+    const onResize = () => {
+      cacheDirty = true;
+    };
+
+    // SplitText runs synchronously inside the first useEffect, but layout
+    // measurement is more reliable on the next frame.
+    const initId = requestAnimationFrame(() => {
+      cacheDirty = true;
+      rafId = requestAnimationFrame(tick);
+      window.addEventListener('mousemove', onMouse, { passive: true });
+      window.addEventListener('resize', onResize);
+      window.addEventListener('scroll', onResize, { passive: true });
+    });
+
+    return () => {
+      cancelAnimationFrame(initId);
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener('mousemove', onMouse);
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('scroll', onResize);
+      rows.forEach((row) => {
+        row.style.transform = '';
+      });
+      charsData.forEach((c) => {
+        c.el.style.transform = '';
+      });
     };
   }, []);
 
@@ -106,7 +232,7 @@ const HeroSection = () => {
         {/* row-1 */}
         <div className="font-grid -mt-8 flex h-full flex-col justify-center gap-4">
           <div className="hidden grid-cols-1 gap-2 lg:grid lg:grid-cols-2">
-            <div className="overflow-hidden">
+            <div className="overflow-visible">
               <h2>THE BEST</h2>
             </div>
             <div className="ml-auto hidden max-w-96 flex-col font-sans leading-relaxed uppercase lg:flex">
@@ -132,23 +258,23 @@ const HeroSection = () => {
           <span className="font-grid relative -mb-4 block text-[11px] uppercase lg:hidden">
             THE BEST
           </span>
-          <div className="relative flex overflow-hidden lg:justify-end">
+          <div className="relative flex overflow-visible lg:justify-end">
             <h2>WEB DESIGN</h2>
           </div>
           {/* row-3 */}
-          <div className="overflow-hidden">
+          <div className="overflow-visible">
             <h2>STUDIO</h2>
           </div>
           {/* row-4 */}
-          <div className="flex overflow-hidden lg:justify-end">
+          <div className="flex overflow-visible lg:justify-end">
             <h2>IN</h2>
           </div>
           {/* row-1-mobile */}
-          <div className="flex justify-end overflow-hidden lg:hidden">
+          <div className="flex justify-end overflow-visible lg:hidden">
             <h2>THE</h2>
           </div>
           {/* row-2-mobile */}
-          <div className="flex justify-end overflow-hidden lg:hidden">
+          <div className="flex justify-end overflow-visible lg:hidden">
             <h2>WHOLE</h2>
           </div>
           {/* row-5 */}

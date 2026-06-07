@@ -206,6 +206,29 @@ const ProjectsSectionDesktop = ({
     };
   }, [projects]);
 
+  // 3D parallax tilt + cursor spotlight on card hover.
+  // Writes --tilt-x/--tilt-y (deg) and --mouse-x/--mouse-y (%) CSS vars.
+  const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width;
+    const py = (e.clientY - rect.top) / rect.height;
+    const nx = px - 0.5;
+    const ny = py - 0.5;
+    card.style.setProperty('--tilt-x', `${(-ny * 12).toFixed(2)}deg`);
+    card.style.setProperty('--tilt-y', `${(nx * 12).toFixed(2)}deg`);
+    card.style.setProperty('--mouse-x', `${(px * 100).toFixed(1)}%`);
+    card.style.setProperty('--mouse-y', `${(py * 100).toFixed(1)}%`);
+    card.style.setProperty('--hover-strength', '1');
+  };
+
+  const handleCardMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    card.style.setProperty('--tilt-x', '0deg');
+    card.style.setProperty('--tilt-y', '0deg');
+    card.style.setProperty('--hover-strength', '0');
+  };
+
   // Calculate track height for CSS (static value)
   const baseHeightPerProject = 37.5;
   const trackHeight = projects.length * baseHeightPerProject;
@@ -247,6 +270,8 @@ const ProjectsSectionDesktop = ({
                     }}
                     role="listitem"
                     className="case w-dyn-item"
+                    onMouseMove={handleCardMouseMove}
+                    onMouseLeave={handleCardMouseLeave}
                     style={{
                       translate: 'none',
                       rotate: 'none',
@@ -262,6 +287,8 @@ const ProjectsSectionDesktop = ({
                         target="_blank"
                         rel="noopener noreferrer"
                         className="case-wrapper w-inline-block"
+                        data-cursor="image"
+                        data-cursor-label="View site"
                       >
                         <div className="case-img">
                           <div className="case-element">
@@ -293,6 +320,8 @@ const ProjectsSectionDesktop = ({
                       <Link
                         to={project.href}
                         className="case-wrapper w-inline-block"
+                        data-cursor="image"
+                        data-cursor-label="View case"
                       >
                         <div className="case-img">
                           <div className="case-element">

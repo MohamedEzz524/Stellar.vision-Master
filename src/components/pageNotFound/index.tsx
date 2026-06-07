@@ -1,7 +1,10 @@
 import { useNavigate } from 'react-router-dom';
+import { useMagnetic } from '../../hooks/useMagnetic';
 
 const PageNotFound = () => {
   const navigate = useNavigate();
+  const backButtonRef = useMagnetic<HTMLButtonElement>();
+  const homeButtonRef = useMagnetic<HTMLButtonElement>({ strength: 0.5 });
 
   return (
     <div className="bg-bgPrimary text-textPrimary relative z-10 flex min-h-screen w-full items-center justify-center p-4">
@@ -29,15 +32,20 @@ const PageNotFound = () => {
         {/* Navigation buttons */}
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
           <button
+            ref={backButtonRef}
             type="button"
             onClick={() => navigate(-1)}
+            data-cursor="link"
             className="border-accentPrimary text-textPrimary hover:bg-accentPrimary/20 trans-colors flex-1 rounded-lg border px-6 py-3 sm:flex-none"
           >
             ← Go Back
           </button>
           <button
+            ref={homeButtonRef}
             type="button"
             onClick={() => navigate('/')}
+            data-cursor="cta"
+            data-cursor-label="Home"
             className="bg-accentPrimary hover:bg-accentHover text-textPrimary trans-colors flex-1 rounded-lg px-6 py-3 sm:flex-none"
           >
             Return Home

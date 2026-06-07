@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Canvas, useThree } from '@react-three/fiber';
+import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
@@ -170,6 +170,40 @@ const StarModel = ({
 
   return <group ref={groupRef} />;
 };
+
+// B — Single bright dot that orbits the star on a tilted plane.
+const OrbitingSatellite = () => {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const tRef = useRef(0);
+
+  useFrame((_, delta) => {
+    tRef.current += delta;
+    const mesh = meshRef.current;
+    if (!mesh) return;
+    const radius = 1.6;
+    const speed = 0.55;
+    const tilt = 0.35;
+    const a = tRef.current * speed;
+    mesh.position.set(
+      Math.cos(a) * radius,
+      Math.sin(a) * tilt,
+      Math.sin(a) * radius,
+    );
+  });
+
+  return (
+    <mesh ref={meshRef}>
+      <sphereGeometry args={[0.045, 16, 16]} />
+      <meshStandardMaterial
+        color={0xffd9a8}
+        emissive={0xffc680}
+        emissiveIntensity={3}
+        toneMapped={false}
+      />
+    </mesh>
+  );
+};
+
 
 const Hero3DModel = ({ onModelReady }: Hero3DModelProps) => {
   const location = useLocation();
@@ -377,6 +411,11 @@ const Hero3DModel = ({ onModelReady }: Hero3DModelProps) => {
         pointerEvents: shouldRenderCanvas ? 'auto' : 'none',
       }}
     >
+      {/* Soft warm halo behind the star (option A) */}
+      <div
+        className="star-halo pointer-events-none absolute inset-0"
+        aria-hidden="true"
+      />
       {shouldRenderCanvas && (
         <Canvas
           camera={{ position: [0, 0, 6], fov: 50, near: 0.1, far: 1000 }}
@@ -394,6 +433,8 @@ const Hero3DModel = ({ onModelReady }: Hero3DModelProps) => {
               }
             }}
           />
+          {/* Orbiting satellite dot (option B) */}
+          <OrbitingSatellite />
         </Canvas>
       )}
     </div>

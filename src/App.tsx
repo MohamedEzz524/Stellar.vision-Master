@@ -5,6 +5,7 @@ import routes from './pages/Exportation';
 import PageNotFound from './components/pageNotFound';
 import CustomCursor from './global/CustomCursor';
 import Preloader from './global/Preloader';
+import CinematicVignette from './global/CinematicVignette';
 import { useLenis } from './hooks/useLenis';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
     <main className="App">
       <Preloader />
       {isDesktop && <CustomCursor />}
+      <CinematicVignette />
       {/* Preloader is always mounted and covers the screen, so a null fallback
           is fine here — users will see the preloader (or a black bg on /booking
           routes) while the route chunk downloads. */}
