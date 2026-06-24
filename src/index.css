@@ -825,11 +825,14 @@ html:active .custom-cursor {
     rgba(180, 180, 180, 0.4)
   );
   background-size: 100% 100%;
-  box-shadow: inset 0 2px 2px rgba(255, 255, 255, 0.7);
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.7),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.12);
   color: rgba(0, 0, 0) !important;
 
   position: relative;
   overflow: hidden;
+  cursor: pointer;
 }
 
 /* Moving shimmer effect - glowing light that moves across (mirror reflection) */
@@ -875,6 +878,263 @@ html:active .custom-cursor {
     inset -1px 0 0 rgba(255, 255, 255, 0.1),
     inset 0 4px 6px rgba(255, 255, 255, 0.6);
   cursor: not-allowed;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Faint diagonal texture so disabled days don't read as pure-black holes */
+.calendar-day-disabled::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent 0 4px,
+    rgba(255, 255, 255, 0.025) 4px 5px
+  );
+  pointer-events: none;
+}
+
+/* ===== CALENDAR CELESTIAL-CHART BACKDROP =====
+   Pinned to viewport for the full scroll height of the calendar.
+   Layers: faint coordinate grid + slowly rotating constellation pattern +
+   brutalist astronomy coordinate labels in the corners. */
+
+.calendar-backdrop-anchor {
+  /* Sticky wrapper has 0 height so it never affects layout — the absolute
+     backdrop child still pins to the viewport top via the sticky parent. */
+}
+
+.calendar-backdrop {
+  z-index: 0;
+}
+
+/* Barely-there coordinate grid — squares read as near-black so the moving
+   line sweeps stay the focal element. Just two tiers (no micro): major
+   96px and minor 24px. Alpha kept tiny so the grid is felt, not seen. */
+.calendar-backdrop-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+  background-size:
+    96px 96px,
+    96px 96px,
+    24px 24px,
+    24px 24px;
+  pointer-events: none;
+}
+
+/* Canvas — meteors wandering the grid */
+.calendar-backdrop-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Brutalist astronomy coordinate labels — corners */
+.calendar-backdrop-coord {
+  position: absolute;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.32);
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.calendar-backdrop-coord-tl {
+  top: 16px;
+  left: 18px;
+}
+
+.calendar-backdrop-coord-tr {
+  top: 16px;
+  right: 18px;
+}
+
+.calendar-backdrop-coord-bl {
+  bottom: 16px;
+  left: 18px;
+}
+
+.calendar-backdrop-coord-br {
+  bottom: 16px;
+  right: 18px;
+}
+
+@media (max-width: 640px) {
+  .calendar-backdrop-coord {
+    font-size: 0.5rem;
+    letter-spacing: 0.14em;
+  }
+  .calendar-backdrop-coord-tl,
+  .calendar-backdrop-coord-tr {
+    top: 8px;
+  }
+  .calendar-backdrop-coord-bl,
+  .calendar-backdrop-coord-br {
+    bottom: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calendar-backdrop-constellation {
+    animation: none;
+  }
+}
+
+/* ===== AWARD-TIER CALENDAR HOVER/INTERACTION POLISH ===== */
+
+/* Smooth all calendar interactions */
+.calendar-day-available,
+.time-button,
+.next-button {
+  transition:
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.32s ease,
+    filter 0.32s ease;
+  will-change: transform;
+}
+
+/* Day button — lift + shimmer intensify on hover, press feedback on click */
+.calendar-day-available:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.85),
+    0 6px 18px rgba(255, 255, 255, 0.2),
+    0 12px 32px rgba(255, 255, 255, 0.08);
+  filter: brightness(1.08);
+}
+
+.calendar-day-available:hover:not(:disabled)::before,
+.calendar-day-available:hover:not(:disabled)::after {
+  filter: blur(2px) brightness(1.3);
+}
+
+.calendar-day-available:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+  transition-duration: 0.12s;
+}
+
+/* Focus-visible ring for keyboard nav — accessible without being intrusive */
+.calendar-day-available:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.9);
+  outline-offset: 3px;
+}
+
+/* Primary CTA (big) — magnetic feel: more dramatic hover + scale */
+.calendar-day-available.big {
+  letter-spacing: 0.04em;
+}
+
+.calendar-day-available.big:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.95),
+    0 10px 28px rgba(255, 255, 255, 0.25),
+    0 20px 48px rgba(255, 255, 255, 0.12);
+  filter: brightness(1.06);
+}
+
+.calendar-day-available.big:active:not(:disabled) {
+  transform: translateY(0) scale(0.99);
+  transition-duration: 0.12s;
+}
+
+/* Time slot button — sharper interaction state */
+.time-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.time-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 100%
+  );
+  transition: left 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+  pointer-events: none;
+}
+
+.time-button:hover {
+  background: #3d3d3d !important;
+  box-shadow:
+    inset 3px 0 0 rgba(255, 255, 255, 0.08),
+    inset -3px 0 0 0 rgba(255, 255, 255, 0.08),
+    inset 0 2px 4px rgba(255, 255, 255, 0.75),
+    0 4px 14px rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
+}
+
+.time-button:hover::before {
+  left: 100%;
+}
+
+.time-button:active {
+  transform: translateY(0);
+  transition-duration: 0.12s;
+}
+
+.time-button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.9);
+  outline-offset: 3px;
+}
+
+/* Disabled day — clearer signal it's not interactive */
+.calendar-day-disabled:hover {
+  cursor: not-allowed;
+}
+
+/* Reduced-motion users — drop the lift, keep just the subtle brightness change */
+@media (prefers-reduced-motion: reduce) {
+  .calendar-day-available,
+  .time-button,
+  .next-button,
+  .calendar-day-available.big {
+    transition-duration: 0.01s !important;
+  }
+  .calendar-day-available:hover:not(:disabled),
+  .calendar-day-available.big:hover:not(:disabled),
+  .time-button:hover {
+    transform: none !important;
+  }
+}
+
+/* Admin login: chrome sign-in button — static (no hover transform) */
+.admin-login-button {
+  background: linear-gradient(
+    90deg,
+    rgba(240, 240, 240, 0.95),
+    rgba(200, 200, 200, 0.9) 70%,
+    rgba(180, 180, 180, 0.85)
+  );
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.7),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.12);
+}
+
+/* Admin login: page radial glow backdrop */
+.admin-login-glow {
+  background: radial-gradient(
+    circle at 50% 30%,
+    rgba(255, 255, 255, 0.08),
+    transparent 60%
+  );
 }
 
 /* Preloader halves with 4 L shapes forming expand icon */

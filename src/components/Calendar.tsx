@@ -627,6 +627,187 @@ type CalendarProps = {
   variant?: 'drawer' | 'page';
 };
 
+// Celestial chart backdrop — faint gray coordinate grid + canvas with light
+// particles that wander randomly along the grid lines, turning 90° at every
+// intersection (like data packets traveling a circuit board). Pure decoration.
+const CalendarBackdrop = ({ active }: { active: boolean }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (!active) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const GRID = 96;
+    const MAX_LINES = 5;
+
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
+      dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    type Line = {
+      axis: 'h' | 'v'; // travels horizontally or vertically
+      dir: 1 | -1; // 1 = top→bottom or left→right; -1 reverse
+      perp: number; // perpendicular-axis position (snapped to grid line)
+      head: number; // current position of the line's leading edge
+      len: number; // visual length of the line
+      speed: number;
+    };
+
+    const lines: Line[] = [];
+
+    const spawnLine = () => {
+      const axis: 'h' | 'v' = Math.random() < 0.5 ? 'h' : 'v';
+      const dir: 1 | -1 = Math.random() < 0.5 ? 1 : -1;
+      const screenSize = axis === 'h' ? width : height;
+      const perpSize = axis === 'h' ? height : width;
+      // Pick a perpendicular position: half the time snap to a grid line
+      // (for that "follows the grid" feel), half the time go fully random.
+      // Always keep a one-cell margin from the edges so the line is fully
+      // within the visible area, never grazing an edge.
+      const margin = GRID;
+      const usable = Math.max(GRID, perpSize - margin * 2);
+      let perp: number;
+      if (Math.random() < 0.5) {
+        const cells = Math.max(1, Math.floor(usable / GRID));
+        perp = margin + Math.floor(Math.random() * cells) * GRID;
+      } else {
+        perp = margin + Math.random() * usable;
+      }
+      const len = 80 + Math.random() * 100; // 80–180px
+      const speed = 1.8 + Math.random() * 2.0; // 1.8–3.8 px/frame
+      // Spawn well off-screen so the line eases into view rather than popping in.
+      const offset = len + 40;
+      const head = dir === 1 ? -offset : screenSize + offset;
+      lines.push({ axis, dir, perp, head, len, speed });
+    };
+
+    // First line right away; subsequent ones spawn on a random interval
+    spawnLine();
+    let lastSpawnAt = performance.now();
+    let nextSpawnDelay = 300 + Math.random() * 800;
+
+    let rafId = 0;
+
+    const tick = (now: number) => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Random-interval spawning
+      if (
+        lines.length < MAX_LINES &&
+        now - lastSpawnAt > nextSpawnDelay
+      ) {
+        spawnLine();
+        lastSpawnAt = now;
+        nextSpawnDelay = 400 + Math.random() * 1500;
+      }
+
+      for (let i = lines.length - 1; i >= 0; i--) {
+        const l = lines[i];
+        l.head += l.dir * l.speed;
+
+        const screenSize = l.axis === 'h' ? width : height;
+
+        // Remove once the entire line + tail has cleared the opposite edge,
+        // with a safety buffer so it never visually "stops" at the boundary.
+        const buffer = 40;
+        if (l.dir === 1 && l.head - l.len > screenSize + buffer) {
+          lines.splice(i, 1);
+          continue;
+        }
+        if (l.dir === -1 && l.head + l.len < -buffer) {
+          lines.splice(i, 1);
+          continue;
+        }
+
+        // Compute head + tail endpoints
+        let x1: number;
+        let y1: number;
+        let x2: number;
+        let y2: number;
+        if (l.axis === 'h') {
+          x1 = l.head;
+          x2 = l.head - l.dir * l.len;
+          y1 = y2 = l.perp;
+        } else {
+          y1 = l.head;
+          y2 = l.head - l.dir * l.len;
+          x1 = x2 = l.perp;
+        }
+
+        // Gradient: brighter at head, fades to nothing at tail
+        const grad = ctx.createLinearGradient(x1, y1, x2, y2);
+        grad.addColorStop(0, 'rgba(195, 205, 225, 0.85)');
+        grad.addColorStop(0.35, 'rgba(170, 180, 205, 0.45)');
+        grad.addColorStop(1, 'rgba(160, 170, 195, 0)');
+
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 1;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+      }
+
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', resize);
+    };
+  }, [active]);
+
+  if (!active) return null;
+
+  return (
+    // Sticky wrapper at 0 height — pins backdrop to viewport through the full
+    // scroll of the calendar without affecting layout.
+    <div
+      className="calendar-backdrop-anchor pointer-events-none sticky top-0 z-0 h-0 w-full"
+      aria-hidden="true"
+    >
+      <div className="calendar-backdrop absolute inset-x-0 top-0 h-[100dvh] overflow-hidden">
+        {/* Subdued gray grid */}
+        <div className="calendar-backdrop-grid" />
+
+        {/* Canvas: random light packets wandering the grid */}
+        <canvas ref={canvasRef} className="calendar-backdrop-canvas" />
+
+        {/* Coordinate labels in the corners */}
+        <div className="calendar-backdrop-coord calendar-backdrop-coord-tl">
+          RA 12°34′ &nbsp;/&nbsp; DEC +56°08′
+        </div>
+        <div className="calendar-backdrop-coord calendar-backdrop-coord-tr">
+          MAG 4.2 &nbsp;/&nbsp; AZ 218°
+        </div>
+        <div className="calendar-backdrop-coord calendar-backdrop-coord-bl">
+          STELLAR.VISION
+        </div>
+        <div className="calendar-backdrop-coord calendar-backdrop-coord-br">
+          TIME&nbsp;UTC&nbsp;+02:00
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(
@@ -677,6 +858,8 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
       gsapAnimationsRef.current = [];
     };
   }, []);
+
+
 
   // Load Wistia scripts once (for video in drawer and/or page)
   useEffect(() => {
@@ -2111,7 +2294,9 @@ const Calendar = ({ variant = 'drawer' }: CalendarProps) => {
             }
       }
     >
-      <div className="relative h-auto min-h-full flex-1 pb-4">
+      {/* Kinetic backdrop: grain + vignette + cursor spotlight + stars */}
+      <CalendarBackdrop active={isPageMode || state.viewState !== 0} />
+      <div className="relative z-[1] h-auto min-h-full flex-1 pb-4">
         <div className="overflow-hidden">
           {/* Start Now Button - only in drawer mode */}
           {!isPageMode && (
